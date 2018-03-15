@@ -1,12 +1,11 @@
 pragma solidity ^0.4.19;
 
-import 'zeppelin-solidity/contracts/token/ERC20/MintableToken.sol';
-
-import './ConvertLib.sol';
+import "zeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
+import "./ConvertLib.sol";
 
 contract PowerPiperToken is MintableToken {
-    string public constant name = 'PowerPiperToken';
-    string public constant symbol = 'PWP';
+    string public constant name = "PowerPiperToken";
+    string public constant symbol = "PWP";
     uint8 public constant decimals = 18;
     uint public constant initialSupply = 1000000;
     mapping (address => uint) private balances;
