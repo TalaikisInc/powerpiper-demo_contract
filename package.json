@@ -30,7 +30,7 @@
     "eslint-plugin-mocha": "^4.8.0",
     "eslint-plugin-promise": "^3.0.0",
     "eslint-plugin-standard": "^2.0.0",
-    "ethereumjs-testrpc": "^6.0.3",
+    "ganache-cli": "^6.1.0",
     "html-webpack-plugin": "^2.28.0",
     "json-loader": "^0.5.4",
     "solium": "^1.1.5",
