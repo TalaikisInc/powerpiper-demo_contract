@@ -108,48 +108,48 @@
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "pragma solidity ^0.4.18;\n\nimport \"../Crowdsale.sol\";\nimport \"../../token/ERC20/MintableToken.sol\";\n\n\n/**\n * @title MintedCrowdsale\n * @dev Extension of Crowdsale contract whose tokens are minted in each purchase.\n * Token ownership should be transferred to MintedCrowdsale for minting. \n */\ncontract MintedCrowdsale is Crowdsale {\n\n  /**\n  * @dev Overrides delivery by minting tokens upon purchase.\n  * @param _beneficiary Token purchaser\n  * @param _tokenAmount Number of tokens to be minted\n  */\n  function _deliverTokens(address _beneficiary, uint256 _tokenAmount) internal {\n    require(MintableToken(token).mint(_beneficiary, _tokenAmount));\n  }\n}\n",
-  "sourcePath": "zeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol",
+  "source": "pragma solidity ^0.4.19;\r\n\r\nimport \"./Crowdsale.sol\";\r\nimport \"./MintableToken.sol\";\r\n\r\n\r\n/**\r\n * @title MintedCrowdsale\r\n * @dev Extension of Crowdsale contract whose tokens are minted in each purchase.\r\n * Token ownership should be transferred to MintedCrowdsale for minting. \r\n */\r\ncontract MintedCrowdsale is Crowdsale {\r\n\r\n  /**\r\n   * @dev Overrides delivery by minting tokens upon purchase.\r\n   * @param _beneficiary Token purchaser\r\n   * @param _tokenAmount Number of tokens to be minted\r\n   */\r\n  function _deliverTokens(address _beneficiary, uint256 _tokenAmount) internal {\r\n    require(MintableToken(token).mint(_beneficiary, _tokenAmount));\r\n  }\r\n}\r\n",
+  "sourcePath": "C:\\Users\\DXenu\\Desktop\\box\\demo_contract\\contracts\\zeppelin\\MintedCrowdsale.sol",
   "ast": {
-    "absolutePath": "zeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol",
+    "absolutePath": "/C/Users/DXenu/Desktop/box/demo_contract/contracts/zeppelin/MintedCrowdsale.sol",
     "exportedSymbols": {
       "MintedCrowdsale": [
-        634
+        930
       ]
     },
-    "id": 635,
+    "id": 931,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 611,
+        "id": 907,
         "literals": [
           "solidity",
           "^",
           "0.4",
-          ".18"
+          ".19"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:24:7"
+        "src": "0:24:13"
       },
       {
-        "absolutePath": "zeppelin-solidity/contracts/crowdsale/Crowdsale.sol",
-        "file": "../Crowdsale.sol",
-        "id": 612,
+        "absolutePath": "/C/Users/DXenu/Desktop/box/demo_contract/contracts/zeppelin/Crowdsale.sol",
+        "file": "./Crowdsale.sol",
+        "id": 908,
         "nodeType": "ImportDirective",
-        "scope": 635,
-        "sourceUnit": 610,
-        "src": "26:26:7",
+        "scope": 931,
+        "sourceUnit": 552,
+        "src": "28:25:13",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "absolutePath": "zeppelin-solidity/contracts/token/ERC20/MintableToken.sol",
-        "file": "../../token/ERC20/MintableToken.sol",
-        "id": 613,
+        "absolutePath": "/C/Users/DXenu/Desktop/box/demo_contract/contracts/zeppelin/MintableToken.sol",
+        "file": "./MintableToken.sol",
+        "id": 909,
         "nodeType": "ImportDirective",
-        "scope": 635,
-        "sourceUnit": 1331,
-        "src": "53:45:7",
+        "scope": 931,
+        "sourceUnit": 906,
+        "src": "55:29:13",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -159,40 +159,40 @@
             "arguments": [],
             "baseName": {
               "contractScope": null,
-              "id": 614,
+              "id": 910,
               "name": "Crowdsale",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 609,
-              "src": "319:9:7",
+              "referencedDeclaration": 551,
+              "src": "313:9:13",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Crowdsale_$609",
+                "typeIdentifier": "t_contract$_Crowdsale_$551",
                 "typeString": "contract Crowdsale"
               }
             },
-            "id": 615,
+            "id": 911,
             "nodeType": "InheritanceSpecifier",
-            "src": "319:9:7"
+            "src": "313:9:13"
           }
         ],
         "contractDependencies": [
-          609
+          551
         ],
         "contractKind": "contract",
-        "documentation": "@title MintedCrowdsale\n@dev Extension of Crowdsale contract whose tokens are minted in each purchase.\nToken ownership should be transferred to MintedCrowdsale for minting. ",
+        "documentation": "@title MintedCrowdsale\r\n@dev Extension of Crowdsale contract whose tokens are minted in each purchase.\r\nToken ownership should be transferred to MintedCrowdsale for minting. \r",
         "fullyImplemented": false,
-        "id": 634,
+        "id": 930,
         "linearizedBaseContracts": [
-          634,
-          609
+          930,
+          551
         ],
         "name": "MintedCrowdsale",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 632,
+              "id": 928,
               "nodeType": "Block",
-              "src": "577:73:7",
+              "src": "582:75:13",
               "statements": [
                 {
                   "expression": {
@@ -203,12 +203,12 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 627,
+                            "id": 923,
                             "name": "_beneficiary",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 617,
-                            "src": "617:12:7",
+                            "referencedDeclaration": 913,
+                            "src": "623:12:13",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
                               "typeString": "address"
@@ -216,12 +216,12 @@
                           },
                           {
                             "argumentTypes": null,
-                            "id": 628,
+                            "id": 924,
                             "name": "_tokenAmount",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 619,
-                            "src": "631:12:7",
+                            "referencedDeclaration": 915,
+                            "src": "637:12:13",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
@@ -244,14 +244,14 @@
                             "arguments": [
                               {
                                 "argumentTypes": null,
-                                "id": 624,
+                                "id": 920,
                                 "name": "token",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 394,
-                                "src": "605:5:7",
+                                "referencedDeclaration": 336,
+                                "src": "611:5:13",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_ERC20_$1203",
+                                  "typeIdentifier": "t_contract$_ERC20_$594",
                                   "typeString": "contract ERC20"
                                 }
                               }
@@ -259,22 +259,22 @@
                             "expression": {
                               "argumentTypes": [
                                 {
-                                  "typeIdentifier": "t_contract$_ERC20_$1203",
+                                  "typeIdentifier": "t_contract$_ERC20_$594",
                                   "typeString": "contract ERC20"
                                 }
                               ],
-                              "id": 623,
+                              "id": 919,
                               "name": "MintableToken",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 1330,
-                              "src": "591:13:7",
+                              "referencedDeclaration": 905,
+                              "src": "597:13:13",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_contract$_MintableToken_$1330_$",
+                                "typeIdentifier": "t_type$_t_contract$_MintableToken_$905_$",
                                 "typeString": "type(contract MintableToken)"
                               }
                             },
-                            "id": 625,
+                            "id": 921,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -282,27 +282,27 @@
                             "lValueRequested": false,
                             "names": [],
                             "nodeType": "FunctionCall",
-                            "src": "591:20:7",
+                            "src": "597:20:13",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_MintableToken_$1330",
+                              "typeIdentifier": "t_contract$_MintableToken_$905",
                               "typeString": "contract MintableToken"
                             }
                           },
-                          "id": 626,
+                          "id": 922,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "mint",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 1310,
-                          "src": "591:25:7",
+                          "referencedDeclaration": 885,
+                          "src": "597:25:13",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_uint256_$returns$_t_bool_$",
                             "typeString": "function (address,uint256) external returns (bool)"
                           }
                         },
-                        "id": 629,
+                        "id": 925,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -310,7 +310,7 @@
                         "lValueRequested": false,
                         "names": [],
                         "nodeType": "FunctionCall",
-                        "src": "591:53:7",
+                        "src": "597:53:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
@@ -324,18 +324,18 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 622,
+                      "id": 918,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1653,
-                      "src": "583:7:7",
+                      "referencedDeclaration": 1761,
+                      "src": "589:7:13",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 630,
+                    "id": 926,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -343,19 +343,19 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "583:62:7",
+                    "src": "589:62:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 631,
+                  "id": 927,
                   "nodeType": "ExpressionStatement",
-                  "src": "583:62:7"
+                  "src": "589:62:13"
                 }
               ]
             },
-            "id": 633,
+            "id": 929,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -363,16 +363,16 @@
             "name": "_deliverTokens",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 620,
+              "id": 916,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 617,
+                  "id": 913,
                   "name": "_beneficiary",
                   "nodeType": "VariableDeclaration",
-                  "scope": 633,
-                  "src": "524:20:7",
+                  "scope": 929,
+                  "src": "529:20:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -380,10 +380,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 616,
+                    "id": 912,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "524:7:7",
+                    "src": "529:7:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
@@ -394,11 +394,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 619,
+                  "id": 915,
                   "name": "_tokenAmount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 633,
-                  "src": "546:20:7",
+                  "scope": 929,
+                  "src": "551:20:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -406,10 +406,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 618,
+                    "id": 914,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "546:7:7",
+                    "src": "551:7:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -419,68 +419,68 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "523:44:7"
+              "src": "528:44:13"
             },
             "payable": false,
             "returnParameters": {
-              "id": 621,
+              "id": 917,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "577:0:7"
+              "src": "582:0:13"
             },
-            "scope": 634,
-            "src": "500:150:7",
+            "scope": 930,
+            "src": "505:152:13",
             "stateMutability": "nonpayable",
-            "superFunction": 563,
+            "superFunction": 505,
             "visibility": "internal"
           }
         ],
-        "scope": 635,
-        "src": "291:361:7"
+        "scope": 931,
+        "src": "285:375:13"
       }
     ],
-    "src": "0:653:7"
+    "src": "0:662:13"
   },
   "legacyAST": {
-    "absolutePath": "zeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol",
+    "absolutePath": "/C/Users/DXenu/Desktop/box/demo_contract/contracts/zeppelin/MintedCrowdsale.sol",
     "exportedSymbols": {
       "MintedCrowdsale": [
-        634
+        930
       ]
     },
-    "id": 635,
+    "id": 931,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 611,
+        "id": 907,
         "literals": [
           "solidity",
           "^",
           "0.4",
-          ".18"
+          ".19"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:24:7"
+        "src": "0:24:13"
       },
       {
-        "absolutePath": "zeppelin-solidity/contracts/crowdsale/Crowdsale.sol",
-        "file": "../Crowdsale.sol",
-        "id": 612,
+        "absolutePath": "/C/Users/DXenu/Desktop/box/demo_contract/contracts/zeppelin/Crowdsale.sol",
+        "file": "./Crowdsale.sol",
+        "id": 908,
         "nodeType": "ImportDirective",
-        "scope": 635,
-        "sourceUnit": 610,
-        "src": "26:26:7",
+        "scope": 931,
+        "sourceUnit": 552,
+        "src": "28:25:13",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "absolutePath": "zeppelin-solidity/contracts/token/ERC20/MintableToken.sol",
-        "file": "../../token/ERC20/MintableToken.sol",
-        "id": 613,
+        "absolutePath": "/C/Users/DXenu/Desktop/box/demo_contract/contracts/zeppelin/MintableToken.sol",
+        "file": "./MintableToken.sol",
+        "id": 909,
         "nodeType": "ImportDirective",
-        "scope": 635,
-        "sourceUnit": 1331,
-        "src": "53:45:7",
+        "scope": 931,
+        "sourceUnit": 906,
+        "src": "55:29:13",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -490,40 +490,40 @@
             "arguments": [],
             "baseName": {
               "contractScope": null,
-              "id": 614,
+              "id": 910,
               "name": "Crowdsale",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 609,
-              "src": "319:9:7",
+              "referencedDeclaration": 551,
+              "src": "313:9:13",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Crowdsale_$609",
+                "typeIdentifier": "t_contract$_Crowdsale_$551",
                 "typeString": "contract Crowdsale"
               }
             },
-            "id": 615,
+            "id": 911,
             "nodeType": "InheritanceSpecifier",
-            "src": "319:9:7"
+            "src": "313:9:13"
           }
         ],
         "contractDependencies": [
-          609
+          551
         ],
         "contractKind": "contract",
-        "documentation": "@title MintedCrowdsale\n@dev Extension of Crowdsale contract whose tokens are minted in each purchase.\nToken ownership should be transferred to MintedCrowdsale for minting. ",
+        "documentation": "@title MintedCrowdsale\r\n@dev Extension of Crowdsale contract whose tokens are minted in each purchase.\r\nToken ownership should be transferred to MintedCrowdsale for minting. \r",
         "fullyImplemented": false,
-        "id": 634,
+        "id": 930,
         "linearizedBaseContracts": [
-          634,
-          609
+          930,
+          551
         ],
         "name": "MintedCrowdsale",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 632,
+              "id": 928,
               "nodeType": "Block",
-              "src": "577:73:7",
+              "src": "582:75:13",
               "statements": [
                 {
                   "expression": {
@@ -534,12 +534,12 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 627,
+                            "id": 923,
                             "name": "_beneficiary",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 617,
-                            "src": "617:12:7",
+                            "referencedDeclaration": 913,
+                            "src": "623:12:13",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
                               "typeString": "address"
@@ -547,12 +547,12 @@
                           },
                           {
                             "argumentTypes": null,
-                            "id": 628,
+                            "id": 924,
                             "name": "_tokenAmount",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 619,
-                            "src": "631:12:7",
+                            "referencedDeclaration": 915,
+                            "src": "637:12:13",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
@@ -575,14 +575,14 @@
                             "arguments": [
                               {
                                 "argumentTypes": null,
-                                "id": 624,
+                                "id": 920,
                                 "name": "token",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 394,
-                                "src": "605:5:7",
+                                "referencedDeclaration": 336,
+                                "src": "611:5:13",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_ERC20_$1203",
+                                  "typeIdentifier": "t_contract$_ERC20_$594",
                                   "typeString": "contract ERC20"
                                 }
                               }
@@ -590,22 +590,22 @@
                             "expression": {
                               "argumentTypes": [
                                 {
-                                  "typeIdentifier": "t_contract$_ERC20_$1203",
+                                  "typeIdentifier": "t_contract$_ERC20_$594",
                                   "typeString": "contract ERC20"
                                 }
                               ],
-                              "id": 623,
+                              "id": 919,
                               "name": "MintableToken",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 1330,
-                              "src": "591:13:7",
+                              "referencedDeclaration": 905,
+                              "src": "597:13:13",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_contract$_MintableToken_$1330_$",
+                                "typeIdentifier": "t_type$_t_contract$_MintableToken_$905_$",
                                 "typeString": "type(contract MintableToken)"
                               }
                             },
-                            "id": 625,
+                            "id": 921,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -613,27 +613,27 @@
                             "lValueRequested": false,
                             "names": [],
                             "nodeType": "FunctionCall",
-                            "src": "591:20:7",
+                            "src": "597:20:13",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_MintableToken_$1330",
+                              "typeIdentifier": "t_contract$_MintableToken_$905",
                               "typeString": "contract MintableToken"
                             }
                           },
-                          "id": 626,
+                          "id": 922,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "mint",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 1310,
-                          "src": "591:25:7",
+                          "referencedDeclaration": 885,
+                          "src": "597:25:13",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_uint256_$returns$_t_bool_$",
                             "typeString": "function (address,uint256) external returns (bool)"
                           }
                         },
-                        "id": 629,
+                        "id": 925,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -641,7 +641,7 @@
                         "lValueRequested": false,
                         "names": [],
                         "nodeType": "FunctionCall",
-                        "src": "591:53:7",
+                        "src": "597:53:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
@@ -655,18 +655,18 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 622,
+                      "id": 918,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1653,
-                      "src": "583:7:7",
+                      "referencedDeclaration": 1761,
+                      "src": "589:7:13",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 630,
+                    "id": 926,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -674,19 +674,19 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "583:62:7",
+                    "src": "589:62:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 631,
+                  "id": 927,
                   "nodeType": "ExpressionStatement",
-                  "src": "583:62:7"
+                  "src": "589:62:13"
                 }
               ]
             },
-            "id": 633,
+            "id": 929,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -694,16 +694,16 @@
             "name": "_deliverTokens",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 620,
+              "id": 916,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 617,
+                  "id": 913,
                   "name": "_beneficiary",
                   "nodeType": "VariableDeclaration",
-                  "scope": 633,
-                  "src": "524:20:7",
+                  "scope": 929,
+                  "src": "529:20:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -711,10 +711,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 616,
+                    "id": 912,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "524:7:7",
+                    "src": "529:7:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
@@ -725,11 +725,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 619,
+                  "id": 915,
                   "name": "_tokenAmount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 633,
-                  "src": "546:20:7",
+                  "scope": 929,
+                  "src": "551:20:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -737,10 +737,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 618,
+                    "id": 914,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "546:7:7",
+                    "src": "551:7:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -750,27 +750,27 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "523:44:7"
+              "src": "528:44:13"
             },
             "payable": false,
             "returnParameters": {
-              "id": 621,
+              "id": 917,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "577:0:7"
+              "src": "582:0:13"
             },
-            "scope": 634,
-            "src": "500:150:7",
+            "scope": 930,
+            "src": "505:152:13",
             "stateMutability": "nonpayable",
-            "superFunction": 563,
+            "superFunction": 505,
             "visibility": "internal"
           }
         ],
-        "scope": 635,
-        "src": "291:361:7"
+        "scope": 931,
+        "src": "285:375:13"
       }
     ],
-    "src": "0:653:7"
+    "src": "0:662:13"
   },
   "compiler": {
     "name": "solc",
@@ -778,5 +778,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.0",
-  "updatedAt": "2018-03-16T14:08:05.171Z"
+  "updatedAt": "2018-03-16T18:56:49.008Z"
 }

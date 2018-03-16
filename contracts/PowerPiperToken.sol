@@ -1,11 +1,17 @@
 pragma solidity ^0.4.19;
 
-import "zeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
-import "zeppelin-solidity/contracts/ownership/NoOwner.sol";
-import "./Convertlib.sol";
-import "./Whitelist.sol";
+import "./zeppelin/MintableToken.sol";
+import "./zeppelin/NoOwner.sol";
+//import "./Convertlib.sol";
+import "./zeppelin/Whitelist.sol";
 
 contract PowerPiperToken is MintableToken, Whitelist, NoOwner {
+    struct User {
+        bytes32 name;
+    }
+
+    mapping (address => User) private users;
+
     string public constant NAME = "PowerPiperToken";
     string public constant SYMBOL = "PWP";
     uint8 public constant DECIMALS = 3;
@@ -28,8 +34,8 @@ contract PowerPiperToken is MintableToken, Whitelist, NoOwner {
         Transfer(0x0, msg.sender, INITIAL_SUPPLY);
     }
 
-    function getBalanceInEth(address addr) public view returns(uint) {
+    /*function getBalanceInEth(address addr) public view returns(uint) {
         return Convertlib.convert(balanceOf(addr), 2);
-    }
+    }*/
 
 }
