@@ -1,8 +1,9 @@
 pragma solidity ^0.4.19;
 
-library ConvertLib {
-    function convert(uint amount, uint conversionRate) public pure returns (uint convertedAmount)
-    {
+library Convertlib {
+
+    function convert(uint amount,uint conversionRate) public pure returns (uint convertedAmount) {
         return amount * conversionRate;
     }
+
 }
