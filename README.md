@@ -6,6 +6,8 @@ In developent. Don't use.
 
 ## Token functions
 
+ Token:
+
 * mint
 * finishMinting
 * transferFrom
@@ -15,9 +17,15 @@ In developent. Don't use.
 * decreaseApproval
 * transferOwnership
 * totalSupply
-* transfer
-* balanceOf
-* addAddressToWhitelist
-* addAddressesToWhitelist
-* removeAddressFromWhitelist
-* removeAddressesFromWhitelist
+* transfer + 
+* balanceOf + 
+//* addAddressToWhitelist
+//* addAddressesToWhitelist
+//* removeAddressFromWhitelist
+//* removeAddressesFromWhitelist
+
+Crowdsale:
+
+* hasClosed
+* buyTokens
+* capReached

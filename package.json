@@ -11,10 +11,10 @@
     "migrate:local": "truffle migrate --network=development --reset",
     "migrate:ropsten": "truffle migrate --network=ropsten --reset",
     "coverage": "./node_modules/.bin/solidity-coverage",
-    "rpc": "ganache-cli -e 100"
+    "rpc": "ganache-cli --defaultBalanceEther=1000000000"
   },
   "author": "Tadas Talaikis <info@talaikis.com>",
-  "license": "GPL-3",
+  "license": "GPLv3",
   "dependencies": {
     "cross-env": "^5.1.4",
     "crypto": "^1.0.1",
@@ -36,6 +36,9 @@
     "babel-preset-env": "^1.1.8",
     "babel-preset-es2015": "^6.22.0",
     "babel-register": "^6.22.0",
+    "chai": "^4.0.2",
+    "chai-as-promised": "^7.0.0",
+    "chai-bignumber": "^2.0.0",
     "copy-webpack-plugin": "^4.0.1",
     "css-loader": "^0.26.1",
     "eslint": "^3.14.0",

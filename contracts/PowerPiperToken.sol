@@ -1,11 +1,11 @@
 pragma solidity ^0.4.19;
 
 import "./zeppelin/MintableToken.sol";
-import "./zeppelin/NoOwner.sol";
+//import "./zeppelin/NoOwner.sol";
 //import "./Convertlib.sol";
-import "./zeppelin/Whitelist.sol";
+//import "./zeppelin/Whitelist.sol";
 
-contract PowerPiperToken is MintableToken, Whitelist, NoOwner {
+contract PowerPiperToken is MintableToken {
     struct User {
         bytes32 name;
     }
@@ -15,7 +15,7 @@ contract PowerPiperToken is MintableToken, Whitelist, NoOwner {
     string public constant NAME = "PowerPiperToken";
     string public constant SYMBOL = "PWP";
     uint8 public constant DECIMALS = 3;
-    uint256 public constant INITIAL_SUPPLY = 10000 * (10 ** uint256(DECIMALS));
+    uint256 public constant INITIAL_SUPPLY = 10000;
 
     modifier validAddress(address _address) {
         require(_address != 0x0);
