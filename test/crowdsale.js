@@ -1,13 +1,11 @@
 const PowerPiperCrowdsale = artifacts.require('./PowerPiperCrowdsale.sol')
 const PowerPiperToken = artifacts.require('./PowerPiperToken.sol')
 const RefundVault = artifacts.require('./RefundVault.sol')
-
 import ether from './helpers/ether'
 import { advanceBlock } from './helpers/advanceToBlock'
 import { increaseTimeTo, duration } from './helpers/increaseTime'
 import latestTime from './helpers/latestTime'
 import EVMRevert from './helpers/EVMRevert'
-
 const BigNumber = web3.BigNumber
 
 require('chai')
@@ -15,8 +13,8 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-contract('PowerPiperCrowdsale', function ([owner, wallet, investor, purchaser]) {
-  const rate = new BigNumber(3000)
+contract('PowerPiperCrowdsale', function ([owner, wallet, investor, otherInvestor]) {
+  const rate = new BigNumber(30)
   const cap = ether(1000)
 
   before(async function () {
@@ -83,6 +81,21 @@ contract('PowerPiperCrowdsale', function ([owner, wallet, investor, purchaser]) 
     await this.crowdsale.send(1).should.be.rejectedWith(EVMRevert)
   })
 
+  it.skip('should grant an extra 10% tokens as bonus for contributions over 5 ETH', async function () {
+    const investmentAmount = ether(1)
+    const largeInvestmentAmount = ether(10)
+    const expectedTokenAmount = rate.mul(investmentAmount)
+    const expectedLargeTokenAmount = rate.mul(largeInvestmentAmount).mul(1.1)
+
+    await increaseTimeTo(this.startTime)
+    await this.crowdsale.buyTokens(investor, { value: investmentAmount, from: investor }).should.be.fulfilled
+    await this.crowdsale.buyTokens(otherInvestor, { value: largeInvestmentAmount, from: otherInvestor }).should.be.fulfilled
+
+    (await this.token.balanceOf(investor)).should.be.bignumber.equal(expectedTokenAmount)
+    (await this.token.balanceOf(otherInvestor)).should.be.bignumber.equal(expectedLargeTokenAmount)
+    (await this.token.totalSupply()).should.be.bignumber.equal(expectedTokenAmount.add(expectedLargeTokenAmount))
+  })
+
   it('should allow finalization and transfer funds to wallet if the cap is reached', async function () {
     await increaseTimeTo(this.openingTime)
     await this.crowdsale.send(cap)
@@ -92,7 +105,39 @@ contract('PowerPiperCrowdsale', function ([owner, wallet, investor, purchaser]) 
     await this.crowdsale.finalize({ from: owner })
     const afterFinalization = web3.eth.getBalance(wallet)
 
-    afterFinalization.minus(beforeFinalization).should.be.bignumber.equal(GOAL)
+    afterFinalization.minus(beforeFinalization).should.be.bignumber.equal(cap)
+  })
+
+  it.skip('should mint 20% of total emitted tokens for the owner wallet upon finish', async function () {
+    const totalInvestmentAmount = ether(10)
+
+    await increaseTimeTo(this.startTime)
+    await this.crowdsale.buyTokens(investor, { value: totalInvestmentAmount, from: investor })
+    await increaseTimeTo(this.endTime + 1)
+    const totalTokenAmount = await this.token.totalSupply()
+
+    await this.crowdsale.finalize()
+    (await this.token.balanceOf(wallet)).should.be.bignumber.equal(totalTokenAmount * 0.2)
+  });
+
+  it.skip('should only allow whitelisted users to participate', async function () {
+    const investmentAmount = ether(1)
+    const expectedTokenAmount = rate.mul(investmentAmount)
+
+    // Requires implementing a whitelist(address) public function in the MyCrowdsale contract
+    await this.crowdsale.whitelist(investor, { from: owner })
+    await increaseTimeTo(this.startTime)
+
+    await this.crowdsale.buyTokens(otherInvestor, { value: ether(1), from: otherInvestor }).should.be.rejectedWith(EVMRevert)
+    await this.crowdsale.buyTokens(investor, { value: ether(1), from: investor }).should.be.fulfilled
+
+    const investorBalance = await this.token.balanceOf(investor)
+    investorBalance.should.be.bignumber.equal(expectedTokenAmount)
+  })
+
+  it.skip('should only allow the owner to whitelist an investor', async function () {
+    // Check out the Ownable.sol contract to see if there is a modifier that could help here
+    await this.crowdsale.whitelist(investor, { from: investor }).should.be.rejectedWith(EVMRevert);
   })
   
   /* Crowdsale
@@ -207,7 +252,7 @@ contract('PowerPiperCrowdsale', function ([owner, wallet, investor, purchaser]) 
       const { logs } = await this.crowdsale.sendTransaction({ value: value, from: investor, gas: 299999 })
       const event = logs.find(e => e.event === 'TokenPurchase')
       should.exist(event)
-      event.args.purchaser.should.equal(investor)
+      event.args.investor.should.equal(investor)
       event.args.beneficiary.should.equal(investor)
       event.args.value.should.be.bignumber.equal(value)
       event.args.amount.should.be.bignumber.equal(expectedTokenAmount)

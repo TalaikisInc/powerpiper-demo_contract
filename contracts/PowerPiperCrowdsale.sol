@@ -1,19 +1,19 @@
 pragma solidity ^0.4.19;
 
-import "./PowerPiperToken.sol";
-import "./zeppelin/MintedCrowdsale.sol";
-import "./zeppelin/TimedCrowdsale.sol";
-import "./zeppelin/CappedCrowdsale.sol";
+//import "./zeppelin/MintedCrowdsale.sol";
 // import "./zeppelin/WhitelistedCrowdsale.sol";
 // import "./zeppelin/IncreasingPriceCrowdsale.sol";
+import "./zeppelin/TimedCrowdsale.sol";
+import "./PowerPiperToken.sol";
+import "./zeppelin/CappedCrowdsale.sol";
+import "./zeppelin/FinalizableCrowdsale.sol";
 
-contract PowerPiperCrowdsale is TimedCrowdsale, MintedCrowdsale, CappedCrowdsale {
-    function PowerPiperCrowdsale(uint256 _openingTime, uint256 _closingTime, uint256 _rate, address _wallet, MintableToken _token, uint256 _cap) public
-    Crowdsale(_rate, _wallet, _token)
+contract PowerPiperCrowdsale is CappedCrowdsale, FinalizableCrowdsale {
+    function PowerPiperCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, uint256 _cap, address _wallet, MintableToken _token) public
     CappedCrowdsale(_cap)
-    TimedCrowdsale(_openingTime, _closingTime)
+    Crowdsale(_rate, _wallet, _token)
+    TimedCrowdsale(_startTime, _endTime)
     {
-
     }
 
     function createTokenContract() internal returns (MintableToken) {
