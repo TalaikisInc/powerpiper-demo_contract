@@ -1,77 +1,263 @@
-import decodeLogs from './helpers/decodeLogs'
+import assertRevert from './helpers/assertRevert'
+import expectThrow from './helpers/expectThrow'
+import toPromise from './helpers/toPromise'
 const PowerPiperToken = artifacts.require('./PowerPiperToken.sol')
+const HasNoContracts = artifacts.require('./zeppelin/HasNoContracts.sol')
+const ForceEther = artifacts.require('./zeppelin/ForceEther.sol')
 
-contract('PowerPiperToken', function (accounts) {
-  let token
-  const creator = accounts[0]
+contract('PowerPiperToken', function ([owner, recipient, anotherAccount]) {
+  const _name = 'PowerPiperToken'
+  const _symbol = 'PWP'
+  const _decimals = 3
+  const _creator = owner
+  const _zero = '0x0000000000000000000000000000000000000000'
+  const _amount = web3.toWei('1', 'ether')
 
-  beforeEach(async function () {
-    token = await PowerPiperToken.new({ from: creator })
+  beforeEach('setup token contract for each test', async function () {
+    this.token = await PowerPiperToken.new(_name, _symbol, _decimals, { from: _creator })
+    this.supply = await this.token.totalSupply()
   })
 
-  it('has initial supply of 10,000 tokens', async function () {
-    const decimals = await token.totalSupply()
-    assert(decimals.eq(10000))
-  })
+  describe('initial conditions', function () {
+    it('has initial supply of 0 tokens', async function () {
+      assert(this.supply.eq(0))
+    })
 
-  it('assigns the initial total supply to the creator', async function () {
-    const totalSupply = await token.totalSupply()
-    const creatorBalance = await token.balanceOf(creator)
-
-    assert(creatorBalance.eq(totalSupply))
-
-    const receipt = web3.eth.getTransactionReceipt(token.transactionHash)
-    const logs = decodeLogs(receipt.logs, PowerPiperToken, token.address)
-    assert.equal(logs.length, 1)
-    assert.equal(logs[0].event, 'Transfer')
-    assert.equal(logs[0].args.from.valueOf(), 0x0)
-    assert.equal(logs[0].args.to.valueOf(), creator)
-    assert(logs[0].args.value.eq(totalSupply))
-  })
-
-  it('should have 10000 tokens in the first account', function () {
-    return PowerPiperToken.deployed().then(function (instance) {
-      return instance.balanceOf.call(creator)
-    }).then(function (balance) {
-      assert.equal(balance.valueOf(), 10000, `10000 wasn't in the first account`)
+    it('should have 0 tokens in the first account', function () {
+      return PowerPiperToken.deployed().then(function (instance) {
+        return instance.balanceOf.call(_creator)
+      }).then(function (balance) {
+        assert.equal(balance.valueOf(), 0, `0 wasn't in the first account`)
+      })
     })
   })
 
-  it('should send token correctly', function () {
-    var i
+  describe('when mintable', function () {
+    const initial = 10000
 
-    // Get initial balances of first and second account.
-    var accountOne = creator
-    var accountTwo = accounts[1]
+    beforeEach(async function () {
+      await this.token.mint(owner, initial, { from: owner })
+    })
 
-    var accountOneStartingBalance
-    var accountTwoStartingBalance
-    var accountOneEndingBalance
-    var accountTwoEndingBalance
+    it('should return false if still mintable', async function () {
+      const mintingFinished = await this.token.mintingFinished()
+      assert.equal(mintingFinished, false)
+    })
 
-    var amount = 10
+    it('returns zero for some account', async function () {
+      const balance = await this.token.balanceOf(anotherAccount)
+      assert.equal(balance, 0)
+    })
 
-    return PowerPiperToken.deployed().then(function (instance) {
-      i = instance
-      return i.balanceOf.call(accountOne)
-    }).then(function (balance) {
-      accountOneStartingBalance = balance.toNumber()
-      return i.balanceOf.call(accountTwo)
-    }).then(function (balance) {
-      accountTwoStartingBalance = balance.toNumber()
-      return i.transfer(accountTwo, amount, { from: accountOne })
-    }).then(function () {
-      return i.balanceOf.call(accountOne)
-    }).then(function (balance) {
-      accountOneEndingBalance = balance.toNumber()
-      return i.balanceOf.call(accountTwo)
-    }).then(function (balance) {
-      accountTwoEndingBalance = balance.toNumber()
+    it('finishes token minting', async function () {
+      await this.token.finishMinting({ from: owner })
 
-      assert.equal(accountOneEndingBalance, accountOneStartingBalance - amount,
-        `Amount wasn't correctly taken from the sender`)
-      assert.equal(accountTwoEndingBalance, accountTwoStartingBalance + amount,
-        `Amount wasn't correctly sent to the receiver`)
+      const mintingFinished = await this.token.mintingFinished()
+      assert.equal(mintingFinished, true)
+    })
+
+    it('emits a mint finished event', async function () {
+      const { logs } = await this.token.finishMinting({ from: owner })
+
+      assert.equal(logs.length, 1)
+      assert.equal(logs[0].event, 'MintFinished')
+    })
+
+    it('reverts if trying to stop minting from another account', async function () {
+      await assertRevert(this.token.finishMinting({ from: anotherAccount }))
+    })
+
+    it('mints the requested amount', async function () {
+      const amount = 333
+      await this.token.mint(owner, amount, { from: owner })
+      const balance = await this.token.balanceOf(owner)
+      assert.equal(balance, (amount + initial))
+    })
+
+    it('emits a mint finished event', async function () {
+      const amount = 300
+      const { logs } = await this.token.mint(owner, amount, { from: owner })
+
+      assert.equal(logs.length, 2)
+      assert.equal(logs[0].event, 'Mint')
+      assert.equal(logs[0].args.to, owner)
+      assert.equal(logs[0].args.amount, amount)
+      assert.equal(logs[1].event, 'Transfer')
+    })
+
+    it('reverts if mints from another account', async function () {
+      const amount = 3
+      await assertRevert(this.token.mint(owner, amount, { from: anotherAccount }))
+    })
+
+    describe('has no contracts', function () {
+      beforeEach(async () => {
+        // Create contract and token
+        hasNoContracts = await HasNoContracts.new()
+
+        // Force ownership into contract
+        await this.token.transferOwnership(hasNoContracts.address)
+        const owner = await this.token.owner()
+        assert.equal(owner, hasNoContracts.address)
+      })
+    })
+
+    describe('transfers', function () {
+      it('transfers the requested amount from owner to recipient', async function () {
+        const amount = 111
+        await this.token.transfer(recipient, amount, { from: owner })
+
+        const senderBalance = await this.token.balanceOf(owner)
+        assert.equal(senderBalance, (initial - amount))
+
+        const recipientBalance = await this.token.balanceOf(recipient)
+        assert.equal(recipientBalance, amount)
+      })
+
+      it('transfers the requested amount from recipient to owner', async function () {
+        const amount = 300
+
+        await this.token.transfer(recipient, amount, { from: owner })
+        await this.token.transfer(owner, amount, { from: recipient })
+
+        const senderBalance = await this.token.balanceOf(recipient)
+        assert.equal(senderBalance, 0)
+
+        const recipientBalance = await this.token.balanceOf(owner)
+        assert.equal(recipientBalance, initial)
+      })
+
+      it('should revert transfer if owner has no tokens', async function () {
+        await assertRevert(this.token.transfer(recipient, (initial + 1), { from: owner }))
+      })
+
+      it('should revert transfer if recipient has no tokens', async function () {
+        await assertRevert(this.token.transfer(owner, 1, { from: recipient }))
+      })
+
+      it('emits a transfer event', async function () {
+        const amount = 1
+        const { logs } = await this.token.transfer(recipient, amount, { from: owner })
+
+        assert.equal(logs.length, 1)
+        assert.equal(logs[0].event, 'Transfer')
+        assert.equal(logs[0].args.from, owner)
+        assert.equal(logs[0].args.to, recipient)
+        assert(logs[0].args.value.eq(amount))
+      })
+
+      it('reverts transfer if recipient is zero', async function () {
+        await assertRevert(this.token.transfer(_zero, 100, { from: owner }))
+      })
     })
   })
+
+  describe('when the token is finished mint', function () {
+    beforeEach(async function () {
+      await this.token.finishMinting({ from: owner })
+    })
+
+    it('returns true', async function () {
+      const mintingFinished = await this.token.mintingFinished.call()
+      assert.equal(mintingFinished, true)
+    })
+
+    it('reverts if owner tries mint', async function () {
+      await assertRevert(this.token.finishMinting({ from: owner }))
+    })
+
+    it('reverts if another account tries mint', async function () {
+      await assertRevert(this.token.finishMinting({ from: anotherAccount }))
+    })
+
+    it('reverts for amount from owner', async function () {
+      await assertRevert(this.token.mint(owner, 100, { from: owner }))
+    })
+
+    it('reverts from amount from another account', async function () {
+      await assertRevert(this.token.mint(owner, 500, { from: anotherAccount }))
+    })
+  })
+
+  it('should have an owner', async function () {
+    let owner = await this.token.owner()
+    assert.isTrue(owner !== 0)
+  })
+
+  it('changes owner after transfer', async function () {
+    let other = anotherAccount
+    await this.token.transferOwnership(other)
+    let owner = await this.token.owner()
+
+    assert.isTrue(owner === other)
+  })
+
+  it('should prevent non-owners from transfering', async function () {
+    const other = anotherAccount
+    const owner = await this.token.owner.call()
+    assert.isTrue(owner !== other)
+    await assertRevert(this.token.transferOwnership(other, { from: other }))
+  })
+
+  it('should guard ownership against stuck state', async function () {
+    let originalOwner = await this.token.owner()
+    await assertRevert(this.token.transferOwnership(null, { from: originalOwner }))
+  })
+
+  it('should be constructorable', async function () {
+    await PowerPiperToken.new()
+  })
+
+  /* enbale if constructor is payable
+  it('should not accept ether in constructor', async function () {
+    await expectThrow(PowerPiperToken.new({ value: _amount }))
+  })*/
+
+  it('should not accept ether', async function () {
+    let hasNoEther = await PowerPiperToken.new()
+
+    await expectThrow(
+      toPromise(web3.eth.sendTransaction)({
+        from: anotherAccount,
+        to: hasNoEther.address,
+        value: _amount
+      })
+    )
+  })
+
+  it('should allow owner to reclaim ether', async function () {
+    // Create contract
+    let hasNoEther = await PowerPiperToken.new()
+    const startBalance = await web3.eth.getBalance(hasNoEther.address)
+    assert.equal(startBalance, 0)
+
+    // Force ether into it
+    let forceEther = await ForceEther.new({ value: _amount })
+    await forceEther.destroyAndSend(hasNoEther.address)
+    const forcedBalance = await web3.eth.getBalance(hasNoEther.address)
+    assert.equal(forcedBalance, _amount)
+
+    // Reclaim
+    const ownerStartBalance = await web3.eth.getBalance(owner)
+    await hasNoEther.reclaimEther()
+    const ownerFinalBalance = await web3.eth.getBalance(owner)
+    const finalBalance = await web3.eth.getBalance(hasNoEther.address)
+    assert.equal(finalBalance, 0)
+    assert.isAbove(ownerFinalBalance, ownerStartBalance)
+  })
+
+  it('should allow only owner to reclaim ether', async function () {
+    // Create contract
+    let hasNoEther = await PowerPiperToken.new({ from: owner })
+
+    // Force ether into it
+    let forceEther = await ForceEther.new({ value: _amount })
+    await forceEther.destroyAndSend(hasNoEther.address)
+    const forcedBalance = await web3.eth.getBalance(hasNoEther.address)
+    assert.equal(forcedBalance, _amount)
+
+    // Reclaim
+    await expectThrow(hasNoEther.reclaimEther({ from: anotherAccount }))
+  })
+
 })
