@@ -11,7 +11,7 @@
     "migrate:local": "truffle migrate --network=development --reset",
     "migrate:ropsten": "truffle migrate --network=ropsten --reset",
     "coverage": "./node_modules/.bin/solidity-coverage",
-    "rpc": "ganache-cli --defaultBalanceEther=1000000000"
+    "rpc": "ganache-cli 9007199254740991  --defaultBalanceEther=1000 --gasPrice 1 --gasLimit 9007199254740991 --seed"
   },
   "author": "Tadas Talaikis <info@talaikis.com>",
   "license": "GPLv3",

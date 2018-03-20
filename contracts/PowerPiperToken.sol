@@ -9,10 +9,18 @@ import "./zeppelin/HasNoContracts.sol";
 //import "./zeppelin/Whitelist.sol";
 
 contract PowerPiperToken is MintableToken, HasNoEther, HasNoContracts, NoOwner {
-    /*string public constant name = "PowerPiperToken";
+    struct pol {
+        address receiver;
+        uint initialBlockNumber;
+    }
+
+    string public constant name = "PowerPiperToken";
     string public constant symbol = "PWP";
     uint8 public constant decimals = 3;
-    uint256 public constant INITIAL_SUPPLY = 0;
+    event RecoverBalance(address indexed _owner, address indexed _receiver, bool _state);
+    mapping (address => pol) public getPoL;
+
+    /*uint256 public constant INITIAL_SUPPLY = 0;
 
     function PowerPiperToken() public {
         totalSupply_ = INITIAL_SUPPLY;
@@ -34,5 +42,24 @@ contract PowerPiperToken is MintableToken, HasNoEther, HasNoContracts, NoOwner {
     /*function getBalanceInEth(address addr) public view returns(uint) {
         return Convertlib.convert(balanceOf(addr), 2);
     }*/
+
+    function existedPoL(address _owner) public returns (bool) {   
+        pol _pol = getPoL[_owner];
+        if (_pol.receiver == address(0) && _pol.initialBlockNumber == 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function recoverBalance(address _owner) public payable {
+        require(msg.value > 0);
+        require(!existedPoL(_owner));
+
+        address _receiver = msg.sender;
+        getPoL[_owner].receiver = _receiver;
+        getPoL[_owner].initialBlockNumber = block.number;
+        RecoverBalance(_owner, _receiver, true);
+    }
 
 }
