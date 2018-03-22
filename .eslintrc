@@ -13,6 +13,7 @@
       "object-curly-spacing": [2, "always"],
       "no-undef": 0,
       "func-call-spacing": 0,
-      "no-unexpected-multiline" :0
+      "no-unexpected-multiline": 0,
+      "semi": 0
     }
 }

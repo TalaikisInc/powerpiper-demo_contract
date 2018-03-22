@@ -1,23 +1,29 @@
 pragma solidity ^0.4.19;
 
-//import "./zeppelin/MintedCrowdsale.sol";
-// import "./zeppelin/WhitelistedCrowdsale.sol";
-// import "./zeppelin/IncreasingPriceCrowdsale.sol";
-import "./zeppelin/TimedCrowdsale.sol";
-import "./PowerPiperToken.sol";
+import "./zeppelin/MintedCrowdsale.sol";
 import "./zeppelin/CappedCrowdsale.sol";
-import "./zeppelin/FinalizableCrowdsale.sol";
+import "./zeppelin/RefundableCrowdsale.sol";
 
-contract PowerPiperCrowdsale is CappedCrowdsale, FinalizableCrowdsale {
-    function PowerPiperCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, uint256 _cap, address _wallet, MintableToken _token) public
-    CappedCrowdsale(_cap)
+contract PowerPiperCrowdsale is CappedCrowdsale, RefundableCrowdsale, MintedCrowdsale {
+    function PowerPiperCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, uint256 _cap, address _wallet, MintableToken _token, uint256 _goal) public
     Crowdsale(_rate, _wallet, _token)
+    CappedCrowdsale(_cap)
     TimedCrowdsale(_startTime, _endTime)
+    RefundableCrowdsale(_goal)
     {
+        require(_goal <= _cap);
     }
 
-    function createTokenContract() internal returns (MintableToken) {
-        return new PowerPiperToken();
+    function hasEnded() public view returns (bool) {
+        return super.hasClosed();
+    }
+
+    function getTokenAmount(uint256 weiAmount) internal view returns(uint256) {
+        return super._getTokenAmount(weiAmount);
+    }
+
+    function forwardFunds() internal {
+        return super._forwardFunds();
     }
 
 }
