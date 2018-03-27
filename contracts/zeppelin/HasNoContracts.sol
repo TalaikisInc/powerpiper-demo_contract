@@ -2,7 +2,6 @@ pragma solidity ^0.4.19;
 
 import "./Ownable.sol";
 
-
 /**
  * @title Contracts that should not own Contracts
  * @author Remco Bloemen <remco@2π.com>
@@ -11,12 +10,12 @@ import "./Ownable.sol";
  */
 contract HasNoContracts is Ownable {
 
-  /**
-   * @dev Reclaim ownership of Ownable contracts
-   * @param contractAddr The address of the Ownable to be reclaimed.
-   */
-  function reclaimContract(address contractAddr) external onlyOwner {
-    Ownable contractInst = Ownable(contractAddr);
-    contractInst.transferOwnership(owner);
-  }
+    /**
+    * @dev Reclaim ownership of Ownable contracts
+    * @param contractAddr The address of the Ownable to be reclaimed.
+    */
+    function reclaimContract(address contractAddr) external onlyOwner {
+        Ownable contractInst = Ownable(contractAddr);
+        contractInst.transferOwnership(owner);
+    }
 }

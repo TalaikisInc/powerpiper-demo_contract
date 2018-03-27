@@ -271,11 +271,11 @@ contract('PowerPiperCrowdsale', function ([owner, wallet, investor, outsider]) {
     const balanceBeforeInvestment = web3.eth.getBalance(investor);
 
     await increaseTimeTo(this.openingTime);
-    await this.crowdsale.sendTransaction({ value: ether(1), from: investor, gasPrice: 0 });
+    await this.crowdsale.sendTransaction({ value: ether(1), from: investor });
     await increaseTimeTo(this.afterClosingTime);
 
     await this.crowdsale.finalize({ from: owner });
-    await this.crowdsale.claimRefund({ from: investor, gasPrice: 0 }).should.be.fulfilled;
+    await this.crowdsale.claimRefund({ from: investor }).should.be.fulfilled;
 
     const balanceAfterRefund = web3.eth.getBalance(investor);
     balanceBeforeInvestment.should.be.bignumber.equal(balanceAfterRefund);
@@ -300,7 +300,7 @@ contract('PowerPiperCrowdsale', function ([owner, wallet, investor, outsider]) {
     await increaseTimeTo(this.afterClosingTime);
     await this.crowdsale.finalize({ from: owner });
     const pre = web3.eth.getBalance(investor);
-    await this.crowdsale.claimRefund({ from: investor, gasPrice: 0 })
+    await this.crowdsale.claimRefund({ from: investor })
       .should.be.fulfilled;
     const post = web3.eth.getBalance(investor);
     post.minus(pre).should.be.bignumber.equal(LESS_THAN_GOAL);
@@ -338,4 +338,52 @@ contract('PowerPiperCrowdsale', function ([owner, wallet, investor, outsider]) {
     const post = web3.eth.getBalance(wallet);
     post.minus(pre).should.be.bignumber.equal(value);
   })*/
-});
+
+  it('should grant an extra 10% tokens as bonus for contributions over 5 ETH', async function () {
+    const investmentAmount = ether(1);
+    const largeInvestmentAmount = ether(10);
+    const expectedTokenAmount = RATE.mul(investmentAmount);
+    const expectedLargeTokenAmount = RATE.mul(largeInvestmentAmount).mul(1.1);
+
+    await increaseTimeTo(this.startTime);
+    await this.crowdsale.buyTokens(investor, { value: investmentAmount, from: investor }).should.be.fulfilled;
+    await this.crowdsale.buyTokens(otherInvestor, { value: largeInvestmentAmount, from: otherInvestor }).should.be.fulfilled;
+
+    (await this.token.balanceOf(investor)).should.be.bignumber.equal(expectedTokenAmount);
+    (await this.token.balanceOf(otherInvestor)).should.be.bignumber.equal(expectedLargeTokenAmount);
+    (await this.token.totalSupply()).should.be.bignumber.equal(expectedTokenAmount.add(expectedLargeTokenAmount));
+  })
+
+  it('should mint 20% of total emitted tokens for the owner wallet upon finish', async function () {
+    const totalInvestmentAmount = ether(10);
+
+    await increaseTimeTo(this.startTime);
+    await this.crowdsale.buyTokens(investor, { value: totalInvestmentAmount, from: investor });
+    await increaseTimeTo(this.endTime + 1);
+    const totalTokenAmount = await this.token.totalSupply();
+
+    await this.crowdsale.finalize();
+    (await this.token.balanceOf(wallet)).should.be.bignumber.equal(totalTokenAmount * 0.2);
+  })
+
+  /*it('should only allow whitelisted users to participate', async function () {
+    const investmentAmount = ether(1);
+    const expectedTokenAmount = RATE.mul(investmentAmount);
+
+    // Requires implementing a whitelist(address) public function in the MyCrowdsale contract
+    await this.crowdsale.whitelist(investor, { from: owner });
+    await increaseTimeTo(this.startTime);
+
+    await this.crowdsale.buyTokens(otherInvestor, { value: ether(1), from: otherInvestor }).should.be.rejectedWith(EVMRevert);
+    await this.crowdsale.buyTokens(investor, { value: ether(1), from: investor }).should.be.fulfilled;
+
+    const investorBalance = await this.token.balanceOf(investor);
+    investorBalance.should.be.bignumber.equal(expectedTokenAmount);
+  })
+
+  it('should only allow the owner to whitelist an investor', async function () {
+    // Check out the Ownable.sol contract to see if there is a modifier that could help here
+    await this.crowdsale.whitelist(investor, { from: investor }).should.be.rejectedWith(EVMRevert);
+  })*/
+
+})

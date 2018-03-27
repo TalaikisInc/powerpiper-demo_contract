@@ -5,6 +5,7 @@ import "./zeppelin/NoOwner.sol";
 import "./zeppelin/HasNoEther.sol";
 import "./zeppelin/HasNoContracts.sol";
 
+
 contract PowerPiperToken is MintableToken, HasNoEther, HasNoContracts, NoOwner {
     struct Loss {
         address receiver;

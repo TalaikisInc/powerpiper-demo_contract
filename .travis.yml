@@ -5,13 +5,18 @@ language: node_js
 node_js:
   - "9"
 
+install:
+  - npm install -g truffle
+  - npm install -g ganache-cli
+  - npm install
+
 cache:
   directories:
     - node_modules
 
 env:
-  -
   - SOLIDITY_COVERAGE=true
+
 
 matrix:
   fast_finish: true
@@ -20,11 +25,16 @@ matrix:
 
 before_script:
   - truffle version
+  - npm run rpc > /dev/null &
+  - sleep 5
 
 script:
   - npm run lint
   - npm run lint:contract
   - npm run test
+
+  after_script:
+  - npm run coverage && cat coverage/lcov.info | coveralls
 
 notifications:
   email:
