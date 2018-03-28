@@ -6,7 +6,6 @@ import "./utils/ProofOfLoss.sol";
 
 /*
 @TODOs:
-* only place/eqips owners can update/ delete
 * equipment transfers
 * insurance/ escrow
 * can't be deleted before contract ends
