@@ -1,9 +1,39 @@
-import './css/app.css'
 import { default as web3 } from 'web3'
 import { default as contract } from 'truffle-contract'
-import coinArtifacts from '../build/contracts/PowerPiperToken.json'
+import tokenArtifacts from '../build/contracts/PowerPiperToken.json'
+const PowerPiperToken = contract(tokenArtifacts)
 
-var PWP = contract(coinArtifacts)
+if (typeof web3 !== 'undefined') {
+  web3 = new Web3(web3.currentProvider)
+} else {
+  web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'))
+}
+
+web3.eth.defaultAccount = web3.eth.accounts[0]
+const PWP = PowerPiperToken.at(web3.eth.accounts[0])
+const transferEvent = PWP.Transfer()
+const kycEvent = PWP.KYC()
+const purchaseEvent = PWP.TokenPurchase()
+
+kycEvent.watch(function (error, result) {
+  if (!error) {
+    $('#loader').hide()
+    $('#user').html(result.args.firstName + ' ' + result.args.lastName)
+  } else {
+    $('#loader').hide()
+    console.log(error)
+  }
+})
+
+$('#button').click(function () {
+  PWP.setKYC($('#firstName').val(), $('#lastName').val())
+})
+
+// events:
+// event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
+// Transfer(address indexed from, address indexed to, uint256 value);
+
+/*import './css/app.css'
 
 var accounts
 var account
@@ -88,5 +118,6 @@ window.addEventListener('load', function () {
     window.web3 = new Web3(new Web3.providers.HttpProvider('http://127.0.0.1:9545'))
   }
   */
-  window.App.start()
+  /*window.App.start()
 })
+*/
