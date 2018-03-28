@@ -2,19 +2,24 @@ pragma solidity ^0.4.19;
 
 import "./zeppelin/MintableToken.sol";
 import "./zeppelin/NoOwner.sol";
-import "./zeppelin/HasNoEther.sol";
-import "./zeppelin/HasNoContracts.sol";
 import "./utils/ProofOfLoss.sol";
 
 /*
 @TODOs:
 * only place/eqips owners can update/ delete
 * equipment transfers
+* insurance/ escrow
 * can't be deleted before contract ends
 * tests for all new functionality
+* list of equipment/ providers
+* list of places/ seekers
+* geo-locations for places
+* more throurough KYC
+* privacy
 * ...
 */
-contract PowerPiperToken is MintableToken, HasNoEther, HasNoContracts, NoOwner, ProofOfLoss {
+
+contract PowerPiperToken is MintableToken, NoOwner, ProofOfLoss {
     string public constant name = "PowerPiperToken";
     string public constant symbol = "PWP";
     uint8 public constant decimals = 3;
@@ -60,6 +65,30 @@ contract PowerPiperToken is MintableToken, HasNoEther, HasNoContracts, NoOwner, 
     address[] private placeIndex;
     address[] private equipmentIndex;
 
+    modifier onlyBy(address _account) {
+        require(msg.sender == _account);
+        _;
+    }
+
+    modifier onlyOwner {
+        require(msg.sender == owner);
+        _;
+    }
+
+    // @TODO
+    modifier costs(uint _cost) {
+        require(msg.value > _cost);
+        _;
+        if (msg.value > _cost) {
+            msg.sender.transfer(_cost - msg.value);
+        }
+    }
+
+    modifier nonEmpty(bytes32 _str) {
+        require(bytes32(_str).length > 5);
+        _;
+    }
+
     function existsUser(address _addr) public constant returns(bool isIndexed) {
         if(userIndex.length == 0) return false;
         return (userIndex[users[_addr].index] == _addr);
@@ -75,7 +104,13 @@ contract PowerPiperToken is MintableToken, HasNoEther, HasNoContracts, NoOwner, 
         return (equipmentIndex[equipments[_addr].index] == _addr);
     }
 
-    function newtUser(address _addr, bytes32 _email, bytes32 _firstName, bytes32 _lastName) public returns(uint index) {
+    function newtUser(address _addr, bytes32 _email, bytes32 _firstName, bytes32 _lastName)
+    nonEmpty(_email)
+    onlyOwner
+    public
+    nonEmpty(_firstName)
+    nonEmpty(_lastName)
+    returns(uint index) {
         require(existsUser(_addr) == false);
         users[_addr].email = _email;
         users[_addr].firstName = _firstName;
@@ -85,7 +120,11 @@ contract PowerPiperToken is MintableToken, HasNoEther, HasNoContracts, NoOwner, 
         return userIndex.length - 1;
     }
 
-    function newPlace(address _addr, address _userAddr, uint8 _msq, uint8 _kwh, uint16 _price) public returns(uint index) {
+    function newPlace(address _addr, address _userAddr, uint8 _msq, uint8 _kwh, uint16 _price)
+    onlyOwner
+    onlyBy(_userAddr)
+    public
+    returns(uint index) {
         require(existsPlace(_addr) == false);
         require(existsUser(_addr) == true);
         places[_addr].msq = _msq;
@@ -98,7 +137,11 @@ contract PowerPiperToken is MintableToken, HasNoEther, HasNoContracts, NoOwner, 
         return placeIndex.length - 1;
     }
 
-    function newEquipment(address _addr, address _userAddr, uint8 _kwh, uint16 _price) public returns(uint index) {
+    function newEquipment(address _addr, address _userAddr, uint8 _kwh, uint16 _price)
+    onlyOwner
+    onlyBy(_userAddr)
+    public
+    returns(uint index) {
         require(existsEquipment(_addr) == false);
         require(existsUser(_addr) == true);
         equipments[_addr].kwh = _kwh;
@@ -110,7 +153,12 @@ contract PowerPiperToken is MintableToken, HasNoEther, HasNoContracts, NoOwner, 
         return placeIndex.length - 1;
     }
 
-    function getUser(address _addr) public constant returns(uint index, bytes32 email, bytes32 firstName, bytes32 lastName) {
+    function getUser(address _addr)
+    onlyOwner
+    onlyBy(_addr)
+    public
+    constant
+    returns(uint index, bytes32 email, bytes32 firstName, bytes32 lastName) {
         require(existsUser(_addr) == true);
         return(
             users[_addr].index,
@@ -120,26 +168,41 @@ contract PowerPiperToken is MintableToken, HasNoEther, HasNoContracts, NoOwner, 
         );
     }
 
-    function getPlace(address _addr) public constant returns(uint index, uint8 msq, uint8 kwh, uint16 price) {
+    function getPlace(address _addr)
+    public
+    constant
+    returns(uint index, uint8 msq, uint8 kwh, uint16 price, address userId) {
         require(existsPlace(_addr) == true);
         return(
             places[_addr].index,
             places[_addr].msq,
             places[_addr].kwh,
-            places[_addr].price
+            places[_addr].price,
+            places[_addr].userId
         );
     }
 
-    function getEquipment(address _addr) public constant returns(uint index, uint8 kwh, uint16 price) {
+    function getEquipment(address _addr)
+    public
+    constant
+    returns(uint index, uint8 kwh, uint16 price, address userId) {
         require(existsEquipment(_addr) == true);
         return(
             places[_addr].index,
             places[_addr].kwh,
-            places[_addr].price
+            places[_addr].price,
+            places[_addr].userId
         );
     }
 
-    function updateUser(address _addr, bytes32 _email, bytes32 _firstName, bytes32 _lastName) public returns(bool) {
+    function updateUser(address _addr, bytes32 _email, bytes32 _firstName, bytes32 _lastName)
+    onlyOwner
+    onlyBy(_addr)
+    public
+    nonEmpty(_email)
+    nonEmpty(_firstName)
+    nonEmpty(_lastName)
+    returns(bool) {
         require(existsUser(_addr) == true);
         users[_addr].email = _email;
         users[_addr].firstName = _firstName;
@@ -148,7 +211,11 @@ contract PowerPiperToken is MintableToken, HasNoEther, HasNoContracts, NoOwner, 
         return true;
     }
 
-    function updatePlace(address _addr, address _userAddr, uint8 _msq, uint8 _kwh, uint16 _price) public returns(bool) {
+    function updatePlace(address _addr, address _userAddr, uint8 _msq, uint8 _kwh, uint16 _price)
+    public
+    onlyOwner
+    onlyBy(_userAddr)
+    returns(bool) {
         require(existsPlace(_addr) == true);
         require(existsUser(_userAddr) == true);
         places[_addr].msq = _msq;
@@ -158,7 +225,11 @@ contract PowerPiperToken is MintableToken, HasNoEther, HasNoContracts, NoOwner, 
         return true;
     }
 
-    function updateEquipment(address _addr, address _userAddr, uint8 _kwh, uint16 _price) public returns(bool) {
+    function updateEquipment(address _addr, address _userAddr, uint8 _kwh, uint16 _price)
+    public
+    onlyOwner
+    onlyBy(_userAddr)
+    returns(bool) {
         require(existsEquipment(_addr) == true);
         require(existsUser(_userAddr) == true);
         equipments[_addr].kwh = _kwh;
@@ -167,7 +238,11 @@ contract PowerPiperToken is MintableToken, HasNoEther, HasNoContracts, NoOwner, 
         return true;
     }
 
-    function deleteUser(address _addr) public returns(uint index) {
+    function deleteUser(address _addr)
+    public
+    onlyOwner
+    onlyBy(_addr)
+    returns(uint index) {
         require(existsUser(_addr) == true);
         uint _rowToDelete = users[_addr].index;
         address _keyToMove = userIndex[userIndex.length - 1];
@@ -179,7 +254,11 @@ contract PowerPiperToken is MintableToken, HasNoEther, HasNoContracts, NoOwner, 
         return _rowToDelete;
     }
 
-    function deletePlace(address _addr) public returns(uint index) {
+    function deletePlace(address _addr, address _userAddr)
+    public
+    onlyOwner
+    onlyBy(_userAddr)
+    returns(uint index) {
         require(existsPlace(_addr) == true);
         uint _rowToDelete = places[_addr].index;
         address _keyToMove = placeIndex[placeIndex.length - 1];
@@ -191,7 +270,11 @@ contract PowerPiperToken is MintableToken, HasNoEther, HasNoContracts, NoOwner, 
         return _rowToDelete;
     }
 
-    function deleteEquipment(address _addr) public returns(uint index) {
+    function deleteEquipment(address _addr, address _userAddr)
+    public
+    onlyOwner
+    onlyBy(_userAddr)
+    returns(uint index) {
         require(existsEquipment(_addr) == true);
         uint _rowToDelete = equipments[_addr].index;
         address _keyToMove = equipmentIndex[equipmentIndex.length - 1];
@@ -215,7 +298,10 @@ contract PowerPiperToken is MintableToken, HasNoEther, HasNoContracts, NoOwner, 
         return equipmentIndex.length;
     }
 
-    function getUserAtIndex(uint index) public  constant returns(address _addr) {
+    function getUserAtIndex(uint index)
+    public
+    onlyOwner
+    constant returns(address _addr) {
         return userIndex[index];
     }
 
