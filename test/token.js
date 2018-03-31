@@ -226,18 +226,15 @@ contract('PowerPiperToken', function ([owner, recipient, anotherAccount]) {
   })
 
   it('should allow owner to reclaim ether', async function () {
-    // Create contract
     let hasNoEther = await PowerPiperToken.new()
     const startBalance = await web3.eth.getBalance(hasNoEther.address)
     assert.equal(startBalance, 0)
 
-    // Force ether into it
     let forceEther = await ForceEther.new({ value: _amount })
     await forceEther.destroyAndSend(hasNoEther.address)
     const forcedBalance = await web3.eth.getBalance(hasNoEther.address)
     assert.equal(forcedBalance, _amount)
 
-    // Reclaim
     const ownerStartBalance = await web3.eth.getBalance(owner)
     await hasNoEther.reclaimEther()
     const ownerFinalBalance = await web3.eth.getBalance(owner)
@@ -247,16 +244,13 @@ contract('PowerPiperToken', function ([owner, recipient, anotherAccount]) {
   })
 
   it('should allow only owner to reclaim ether', async function () {
-    // Create contract
     let hasNoEther = await PowerPiperToken.new({ from: owner })
 
-    // Force ether into it
     let forceEther = await ForceEther.new({ value: _amount })
     await forceEther.destroyAndSend(hasNoEther.address)
     const forcedBalance = await web3.eth.getBalance(hasNoEther.address)
     assert.equal(forcedBalance, _amount)
 
-    // Reclaim
     await expectThrow(hasNoEther.reclaimEther({ from: anotherAccount }))
   })
 

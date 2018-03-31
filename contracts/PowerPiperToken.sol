@@ -2,6 +2,7 @@ pragma solidity ^0.4.19;
 
 import "./zeppelin/MintableToken.sol";
 import "./zeppelin/NoOwner.sol";
+import "./zeppelin/SafeMath.sol";
 import "./utils/ProofOfLoss.sol";
 
 /*
@@ -19,9 +20,12 @@ import "./utils/ProofOfLoss.sol";
 */
 
 contract PowerPiperToken is MintableToken, NoOwner, ProofOfLoss {
+    using SafeMath for uint;
+
     string public constant name = "PowerPiperToken";
     string public constant symbol = "PWP";
     uint8 public constant decimals = 3;
+    uint256 _supply = 0;
 
     struct UserStruct {
         uint index;
@@ -56,7 +60,9 @@ contract PowerPiperToken is MintableToken, NoOwner, ProofOfLoss {
     event DeleteUser(address indexed _addr,  uint _index);
     event DeletePlace(address indexed _addr,  uint _index);
     event DeleteEquipment(address indexed _addr,  uint _index);
+    event DestroyTokensEvent(address indexed _from, uint _value);
     
+    mapping(address => uint) balances;
     mapping(address => UserStruct) users;
     mapping(address => PlaceStruct) places;
     mapping(address => EquipmentStruct) equipments;
@@ -86,6 +92,10 @@ contract PowerPiperToken is MintableToken, NoOwner, ProofOfLoss {
     modifier nonEmpty(bytes32 _str) {
         require(bytes32(_str).length > 5);
         _;
+    }
+
+    function totalSupply() public constant returns (uint) {
+        return _supply;
     }
 
     function existsUser(address _addr) public constant returns(bool isIndexed) {
@@ -304,12 +314,21 @@ contract PowerPiperToken is MintableToken, NoOwner, ProofOfLoss {
         return userIndex[index];
     }
 
-    function getPlaceAtIndex(uint index) public  constant returns(address _addr) {
+    function getPlaceAtIndex(uint index) public constant returns(address _addr) {
         return placeIndex[index];
     }
 
     function getEquipmentAtIndex(uint index) public  constant returns(address _addr) {
         return equipmentIndex[index];
+    }
+
+    function destroyTokens(uint _value) external {
+        require(balances[msg.sender] >= _value);
+
+        balances[msg.sender] = balances[msg.sender].sub(_value);
+        _supply = _supply.sub(_value);
+
+        DestroyTokensEvent(msg.sender, _value);
     }
 
 }
