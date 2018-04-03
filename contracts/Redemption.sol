@@ -3,6 +3,7 @@ pragma solidity ^0.4.19;
 import "./zeppelin/Ownable.sol";
 import "./zeppelin/SafeMath.sol";
 import "./PowerPiperToken.sol";
+import "./Exchange.sol";
 
 
 contract Redemptions is Ownable {
@@ -16,14 +17,15 @@ contract Redemptions is Ownable {
     }
 
     Redemption[] redemptions;
-    PowerPiperToken public token;
+    PowerPiperToken _token;
+    Exchange _exchange;
     event RedeemEvent(address _redeember, uint _amount, uint _timestamp);
 
     function redeem(uint _value, string _location) public returns (uint) {
-        require(token.balanceOf(msg.sender) >= _value);
+        require(_token.balanceOf(msg.sender) >= _value);
 
-        token.approve(msg.sender, _value);
-        token.transferFrom(msg.sender, this, _value);
+        _token.approve(msg.sender, _value);
+        _token.transferFrom(msg.sender, this, _value);
 
         Redemption memory redemption = Redemption({
             redeemer: msg.sender,
@@ -41,7 +43,7 @@ contract Redemptions is Ownable {
         require(redemptions[_index].amount >= 0);
 
         Redemption memory redemption = redemptions[_index];
-        token.destroyTokens(redemption.amount);
+        _exchange.destroyTokens(redemption.amount);
 
         redemptions[_index] = redemptions[redemptions.length-1];
         redemptions.length--;
@@ -51,7 +53,7 @@ contract Redemptions is Ownable {
         require(redemptions[_index].amount >= 0);
 
         Redemption memory redemption = redemptions[_index];
-        token.transfer(redemption.redeemer, redemption.amount);
+        _token.transfer(redemption.redeemer, redemption.amount);
 
         redemptions[_index] = redemptions[redemptions.length-1];
         redemptions.length--;

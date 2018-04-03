@@ -3,10 +3,10 @@ pragma solidity ^0.4.19;
 import "./zeppelin/Ownable.sol";
 import "./zeppelin/SafeMath.sol";
 import "./User.sol";
-import "./Fee.sol";
+import "./Exchange.sol";
 
 
-contract Orders is Ownable, User, Fees {
+contract Orders is Ownable, User {
     using SafeMath for uint;
 
     struct Order {
@@ -16,6 +16,7 @@ contract Orders is Ownable, User, Fees {
     }
 
     Order[] orders;
+    Exchange _exchange;
     event BuyDirectEvent(address _buyer, uint _amount, uint _timestamp);
 
     function getOrder(uint _index) public constant onlyOwner returns (address, uint, uint) {
@@ -28,7 +29,7 @@ contract Orders is Ownable, User, Fees {
 
         //Order memory order = orders[_index];
 
-        uint feeAmount = calculateFee(_amount);
+        uint feeAmount = _exchange.calculateFee(_amount);
         _amount = _amount.sub(feeAmount);
         // mint(this, feeAmount);
 

@@ -11,7 +11,8 @@ const config = {
     development: {
       host: '127.0.0.1',
       port: 8545,
-      network_id: 336
+      network_id: 336,
+      from: '0x6f41fffc0338e715e8aac4851afc4079b712af70'
     },
     /*ropsten: {
       provider: new WalletProvider(crypt.decrypt(process.env.PRIVATE_KEY, process.env.PASS),

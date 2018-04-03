@@ -1,8 +1,9 @@
 require('babel-register')
 require('babel-polyfill')
 const PowerPiperToken = artifacts.require('./PowerPiperToken.sol')
-const Convertlib = artifacts.require('./Convertlib.sol')
+// const Convertlib = artifacts.require('./Convertlib.sol')
 const PowerPiperCrowdsale = artifacts.require('./PowerPiperCrowdsale.sol')
+const Exchange = artifacts.require('./Exchange.sol')
 const Migrations = artifacts.require("./Migrations.sol")
 const BigNumber = web3.BigNumber
 
@@ -15,7 +16,7 @@ module.exports = function(deployer, network, accounts) {
   const _name = 'PowerPiperToken'
   const _symbol = 'PWP'
   const _decimals = 3
-  const _goal = 10000
+  const _goal = 10
 
   return deployer
     .then(() => {
@@ -34,6 +35,12 @@ module.exports = function(deployer, network, accounts) {
           _decimals
         )
     })
+    /*.then(() => {
+      return deployer.link(PowerPiperToken, Exchange)
+    })
+    .then(() => {
+      return deployer.deploy(Exchange, _wallet)
+    })*/
     .then(() => {
       return deployer.deploy(
         PowerPiperCrowdsale,
