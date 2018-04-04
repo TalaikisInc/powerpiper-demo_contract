@@ -3,7 +3,7 @@ require('babel-polyfill')
 const PowerPiperToken = artifacts.require('./PowerPiperToken.sol')
 // const Convertlib = artifacts.require('./Convertlib.sol')
 const PowerPiperCrowdsale = artifacts.require('./PowerPiperCrowdsale.sol')
-const Exchange = artifacts.require('./Exchange.sol')
+// const Exchange = artifacts.require('./Exchange.sol')
 const Migrations = artifacts.require("./Migrations.sol")
 const BigNumber = web3.BigNumber
 

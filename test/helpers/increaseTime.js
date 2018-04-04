@@ -16,7 +16,7 @@ export default function increaseTime (duration) {
       web3.currentProvider.sendAsync({
         jsonrpc: '2.0',
         method: 'evm_mine',
-        id: id + 1,
+        id: _id + 1
       }, (err2, res) => {
         return err2 ? reject(err2) : resolve(res)
       })
