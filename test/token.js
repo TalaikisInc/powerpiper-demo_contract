@@ -255,6 +255,7 @@ contract('PowerPiperToken', function ([owner, recipient, anotherAccount]) {
     await expectThrow(hasNoEther.reclaimEther({ from: anotherAccount }))
   })
 
+  /*
   it('should recover balance', async function() {
     const result = await this.token.recoverBalance(anotherAccount, { from: owner, value: web3.toWei('1', 'ether') })
     assert(result.receipt)
@@ -268,6 +269,6 @@ contract('PowerPiperToken', function ([owner, recipient, anotherAccount]) {
     assert.equal(log.args._owner, anotherAccount)
     assert.equal(log.args._receiver, owner)
     assert.equal(log.args._state, true)
-  })
+  })*/
 
 })
