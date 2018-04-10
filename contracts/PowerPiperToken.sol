@@ -1,9 +1,8 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "./zeppelin/MintableToken.sol";
 import "./zeppelin/NoOwner.sol";
 import "./zeppelin/SafeMath.sol";
-import "./utils/ProofOfLoss.sol";
 import "./Management.sol";
 
 /*
@@ -21,7 +20,7 @@ import "./Management.sol";
 * ...
 */
 
-contract PowerPiperToken is MintableToken, NoOwner, ProofOfLoss, Management {
+contract PowerPiperToken is MintableToken, NoOwner, Management {
 
     using SafeMath for uint;
 
@@ -30,9 +29,21 @@ contract PowerPiperToken is MintableToken, NoOwner, ProofOfLoss, Management {
     uint8 public constant decimals = 3;
     uint public fee = 300; // 300 = 0.3% in 1-digit precision
     uint public energyPriceMarkup = 1000; // 1000 = 1% in 3-digit precision
+    uint public rate = 3000;
+    mapping (address => uint256) balances;
+    uint256 public totalSupply;
+
+    function PowerPiperToken(uint256 _initialAmount) public {
+        balances[msg.sender] = _initialAmount;
+        totalSupply = _initialAmount;
+    }
 
     function getEnergyPriceMarkup() public constant returns (uint) {
         return energyPriceMarkup;
+    }
+
+    function getRate() public constant returns (uint) {
+        return rate;
     }
 
     function getFee() public constant returns (uint) {

@@ -1,15 +1,9 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import ".//SafeMath.sol";
 import "./Ownable.sol";
 
 
-/**
- * @title RefundVault
- * @dev This contract is used for storing funds while a crowdsale
- * is in progress. Supports refunding the money if crowdsale fails,
- * and forwarding it if crowdsale is successful.
- */
 contract RefundVault is Ownable {
     using SafeMath for uint256;
 
@@ -23,18 +17,12 @@ contract RefundVault is Ownable {
     event RefundsEnabled();
     event Refunded(address indexed beneficiary, uint256 weiAmount);
 
-    /**
-    * @param _wallet Vault address
-    */
     function RefundVault(address _wallet) public {
         require(_wallet != address(0));
         wallet = _wallet;
         state = State.Active;
     }
 
-    /**
-    * @param investor Investor address
-    */
     function deposit(address investor) onlyOwner public payable {
         require(state == State.Active);
         deposited[investor] = deposited[investor].add(msg.value);
@@ -43,24 +31,22 @@ contract RefundVault is Ownable {
     function close() onlyOwner public {
         require(state == State.Active);
         state = State.Closed;
-        Closed();
+        emit Closed();
         wallet.transfer(this.balance);
     }
 
     function enableRefunds() onlyOwner public {
         require(state == State.Active);
         state = State.Refunding;
-        RefundsEnabled();
+        emit RefundsEnabled();
     }
 
-    /**
-    * @param investor Investor address
-    */
     function refund(address investor) public {
         require(state == State.Refunding);
         uint256 depositedValue = deposited[investor];
         deposited[investor] = 0;
         investor.transfer(depositedValue);
-        Refunded(investor, depositedValue);
+        emit Refunded(investor, depositedValue);
     }
+
 }

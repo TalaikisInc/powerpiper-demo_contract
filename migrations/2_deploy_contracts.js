@@ -1,21 +1,19 @@
 require('babel-register')
 require('babel-polyfill')
+const Web3 = require('web3')
+const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
 const PowerPiperToken = artifacts.require('./PowerPiperToken.sol')
-// const Convertlib = artifacts.require('./Convertlib.sol')
 const PowerPiperCrowdsale = artifacts.require('./PowerPiperCrowdsale.sol')
-// const Exchange = artifacts.require('./Exchange.sol')
 const Migrations = artifacts.require("./Migrations.sol")
-const BigNumber = web3.BigNumber
+// const Convertlib = artifacts.require('./Convertlib.sol')
+// const Exchange = artifacts.require('./Exchange.sol')
 
 module.exports = function(deployer, network, accounts) {
-  const _openingTime = web3.eth.getBlock('latest').timestamp + 200; // ICO after 200 s
+  const _openingTime = web3.eth.getBlock('latest').timestamp + 20; // ICO after 20 s
   const _closingTime = _openingTime + 86400 * 10; // 10 days
-  const _rate = new BigNumber(3000); // 3000 PWP for 1 ETH
+  const _rate = 3000
   const _wallet = accounts[0] // owner address
-  const _cap = 100000
-  const _name = 'PowerPiperToken'
-  const _symbol = 'PWP'
-  const _decimals = 3
+  const _cap = web3.toWei(555, 'ether')
   const _goal = 10
 
   return deployer
@@ -30,9 +28,7 @@ module.exports = function(deployer, network, accounts) {
     })*/
     .then(() => {
         return deployer.deploy(PowerPiperToken,
-          _name,
-          _symbol,
-          _decimals
+          _cap * _rate
         )
     })
     /*.then(() => {
@@ -53,6 +49,16 @@ module.exports = function(deployer, network, accounts) {
           _goal,
           { from: _wallet }
       )
+    })
+    .then(async () => {
+      const instance = await PowerPiperCrowdsale.deployed()
+      const token = await instance.token.call()
+      console.log('Token address', token)
+      console.log('start: ', _openingTime)
+      console.log('end: ', _closingTime)
+      console.log('rate: ', _rate.toString())
+      console.log('wallet: ', _wallet)
+      console.log(' capInWei:', _cap)
     })
 
 }

@@ -11,10 +11,11 @@
     "migrate:local": "truffle migrate --network=development --reset",
     "migrate:ropsten": "truffle migrate --network=ropsten --reset",
     "coverage": "./node_modules/.bin/solidity-coverage",
-    "rpc": "ganache-cli --defaultBalanceEther 10000000 --gasPrice 1 --gasLimit 0xfffffffffff --seed --networkId 336",
+    "rpc": "ganache-cli --defaultBalanceEther 1000000 --gasPrice 1 --gasLimit 0xfffffffffff --seed --networkId 336",
     "graph": "solgraph ./contracts/PowerPiperCrowdsale.sol > ./graph/PowerPiperCrowdsale.dot && dot -Tpng ./graph/PowerPiperCrowdsale.dot > ./graph/PowerPiperCrowdsale.png && solgraph ./contracts/PowerPiperToken.sol > ./graph/PowerPiperToken.dot && dot -Tpng ./graph/PowerPiperToken.dot > ./graph/PowerPiperToken.png",
     "test": "truffle test",
-    "copy": "cp -R build/contracts/*.json app/src/contracts/"
+    "copy": "cp -R build/contracts/*.json app/src/contracts/",
+    "flatten": "truffle-flattener contracts/PowerPiperCrowdsale.sol >> contracts/flat/PowerPiperCrowdsale.sol"
   },
   "repository": {
     "type": "git",
@@ -36,16 +37,16 @@
     "cross-env": "^5.1.4",
     "crypto": "^1.0.1",
     "dotenv": "^5.0.1",
-    "truffle": "^4.0.0",
-    "truffle-contract": "^1.1.11",
-    "truffle-hdwallet-provider-privkey": "^0.1.0",
+    "truffle": "^4.1.5",
+    "truffle-contract": "^3.0.4",
+    "truffle-hdwallet-provider-privkey": "^0.2.0",
     "truffle-wallet-provider": "0.0.5"
   },
   "devDependencies": {
     "babel-cli": "^6.22.2",
     "babel-core": "^6.22.1",
-    "babel-eslint": "^6.1.2",
-    "babel-loader": "^6.2.10",
+    "babel-eslint": "^8.2.2",
+    "babel-loader": "^7.1.4",
     "babel-plugin-transform-runtime": "^6.22.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.1.8",
@@ -56,16 +57,15 @@
     "chai-bignumber": "^2.0.2",
     "copy-webpack-plugin": "^4.0.1",
     "coveralls": "^3.0.0",
-    "eslint": "^3.14.0",
-    "eslint-config-standard": "^6.0.0",
-    "eslint-plugin-babel": "^4.0.0",
+    "eslint": "^4.19.1",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-babel": "^5.0.0",
     "eslint-plugin-promise": "^3.0.0",
-    "eslint-plugin-standard": "^2.0.0",
+    "eslint-plugin-standard": "^3.0.1",
     "ganache-cli": "^6.1.0",
-    "html-webpack-plugin": "^2.28.0",
     "json-loader": "^0.5.4",
     "solgraph": "^0.2.6",
-    "solidity-coverage": "^0.4.14",
-    "solium": "^1.1.5"
+    "solidity-coverage": "^0.4.15",
+    "solium": "^1.1.6"
   }
 }

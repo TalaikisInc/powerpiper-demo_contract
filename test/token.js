@@ -12,15 +12,16 @@ contract('PowerPiperToken', function ([owner, recipient, anotherAccount]) {
   const _creator = owner
   const _zero = '0x0000000000000000000000000000000000000000'
   const _amount = web3.toWei('1', 'ether')
+  const INITIAL_TOKENS = 670000000000000;
 
   beforeEach('setup token contract for each test', async function () {
-    this.token = await PowerPiperToken.new(_name, _symbol, _decimals, { from: _creator })
+    this.token = await PowerPiperToken.new(INITIAL_TOKENS, { from: _creator })
     this.supply = await this.token.totalSupply()
   })
 
   describe('initial conditions', function () {
-    it('has initial supply of 0 tokens', async function () {
-      assert(this.supply.eq(0))
+    it(`has initial supply of ${INITIAL_TOKENS} tokens`, async function () {
+      assert(this.supply.eq(INITIAL_TOKENS))
     })
 
     it('should have 0 tokens in the first account', function () {
@@ -205,16 +206,16 @@ contract('PowerPiperToken', function ([owner, recipient, anotherAccount]) {
   })
 
   it('should be constructorable', async function () {
-    await PowerPiperToken.new()
+    await PowerPiperToken.new(INITIAL_TOKENS)
   })
 
   /* enbale if constructor is payable
   it('should not accept ether in constructor', async function () {
-    await expectThrow(PowerPiperToken.new({ value: _amount }))
+    await expectThrow(PowerPiperToken.new(INITIAL_TOKENS, { value: _amount }))
   })*/
 
   it('should not accept ether', async function () {
-    let hasNoEther = await PowerPiperToken.new()
+    let hasNoEther = await PowerPiperToken.new(INITIAL_TOKENS)
 
     await expectThrow(
       toPromise(web3.eth.sendTransaction)({
@@ -226,7 +227,7 @@ contract('PowerPiperToken', function ([owner, recipient, anotherAccount]) {
   })
 
   it('should allow owner to reclaim ether', async function () {
-    let hasNoEther = await PowerPiperToken.new()
+    let hasNoEther = await PowerPiperToken.new(INITIAL_TOKENS)
     const startBalance = await web3.eth.getBalance(hasNoEther.address)
     assert.equal(startBalance, 0)
 
@@ -244,7 +245,7 @@ contract('PowerPiperToken', function ([owner, recipient, anotherAccount]) {
   })
 
   it('should allow only owner to reclaim ether', async function () {
-    let hasNoEther = await PowerPiperToken.new({ from: owner })
+    let hasNoEther = await PowerPiperToken.new(INITIAL_TOKENS, { from: owner })
 
     let forceEther = await ForceEther.new({ value: _amount })
     await forceEther.destroyAndSend(hasNoEther.address)

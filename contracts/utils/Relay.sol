@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 
 contract Relay {
@@ -10,7 +10,7 @@ contract Relay {
         _;
     }
 
-    function Relay(address initAddr) {
+    function Relay(address initAddr) public {
         currentVersion = initAddr;
         owner = msg.sender;
     }
@@ -19,7 +19,7 @@ contract Relay {
         currentVersion = newVersion;
     }
 
-    function () {
+    function () external {
         require(currentVersion.delegatecall(msg.data));
     }
 }

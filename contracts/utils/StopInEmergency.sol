@@ -1,7 +1,8 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 
 contract StopInEmergency {
+
     bool private stopped = false;
     address private owner;
 

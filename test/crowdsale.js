@@ -12,12 +12,16 @@ const PowerPiperCrowdsale = artifacts.require('PowerPiperCrowdsale');
 const PowerPiperToken = artifacts.require('PowerPiperToken');
 const RefundVault = artifacts.require('RefundVault');
 
+/*
+@TODO test sending ether to token/ crowdsale addresses
+*/
 contract('PowerPiperCrowdsale', function ([owner, wallet, investor, otherInvestor, outsider]) {
   const RATE = new BigNumber(3000);
   const GOAL = ether(10);
-  const CAP = ether(2000);
+  const CAP = ether(800);
   const LESS_THAN_CAP = ether(19.99);
   const LESS_THAN_GOAL = ether(0.1);
+  const INITIAL_TOKENS = RATE.mul(CAP)
 
   before(async function () {
     await advanceBlock();
@@ -52,7 +56,7 @@ contract('PowerPiperCrowdsale', function ([owner, wallet, investor, otherInvesto
     this.closingTime = this.openingTime + duration.weeks(1);
     this.afterClosingTime = this.closingTime + duration.seconds(12000);
 
-    this.token = await PowerPiperToken.new({ from: owner });
+    this.token = await PowerPiperToken.new(INITIAL_TOKENS, { from: owner });
     this.vault = await RefundVault.new(wallet, { from: owner });
     this.crowdsale = await PowerPiperCrowdsale.new(
       this.openingTime, this.closingTime, RATE, CAP, wallet, this.token.address, GOAL
@@ -136,7 +140,7 @@ contract('PowerPiperCrowdsale', function ([owner, wallet, investor, otherInvesto
   describe('vault integrated', function () {
   }) */
 
-  describe('finalzitions', function () {
+  describe('finalizations', function () {
     it('cannot be finalized before ending', async function () {
       await this.crowdsale.finalize({ from: owner }).should.be.rejectedWith(EVMRevert);
     });
@@ -234,12 +238,10 @@ contract('PowerPiperCrowdsale', function ([owner, wallet, investor, otherInvesto
   it('should accept payments during the sale', async function () {
     const investmentAmount = ether(1);
     const expectedTokenAmount = RATE.mul(investmentAmount);
-
     await increaseTimeTo(this.openingTime);
     await this.crowdsale.buyTokens(investor, { value: investmentAmount, from: investor }).should.be.fulfilled;
-
     (await this.token.balanceOf(investor)).should.be.bignumber.equal(expectedTokenAmount);
-    (await this.token.totalSupply()).should.be.bignumber.equal(expectedTokenAmount);
+    (await this.token.totalSupply()).should.be.bignumber.equal(INITIAL_TOKENS);
   });
 
   it('should reject payments after end', async function () {

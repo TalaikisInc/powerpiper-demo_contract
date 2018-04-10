@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "./zeppelin/SafeMath.sol";
 import "./Order.sol";
@@ -31,7 +31,7 @@ contract Exchange is Orders, Certificates, Redemptions {
         balances[msg.sender] = balances[msg.sender].sub(_value);
         _supply = _supply.sub(_value);
 
-        DestroyTokensEvent(msg.sender, _value);
+        emit DestroyTokensEvent(msg.sender, _value);
     }
 
     function calculateFee(uint _amount) public constant returns (uint) {

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "./zeppelin/MintableToken.sol";
 import "./zeppelin/Ownable.sol";
@@ -42,7 +42,7 @@ contract Equipments is Ownable, User {
         equipments[_addr].price = _price;
         equipments[_addr].userId = _userAddr;
         equipments[_addr].index = equipmentIndex.push(_addr) - 1;
-        NewEquipment(_addr, _userAddr, equipments[_addr].index, _kwh, _price);
+        emit NewEquipment(_addr, _userAddr, equipments[_addr].index, _kwh, _price);
         users[_addr].equipmentId.push(_addr);
         return equipmentIndex.length - 1;
     }
@@ -69,7 +69,7 @@ contract Equipments is Ownable, User {
         require(existsUser(_userAddr) == true);
         equipments[_addr].kwh = _kwh;
         equipments[_addr].price = _price;
-        UpdateEquipment(_addr, _userAddr, equipments[_addr].index, _kwh, _price);
+        emit UpdateEquipment(_addr, _userAddr, equipments[_addr].index, _kwh, _price);
         return true;
     }
 
@@ -84,8 +84,8 @@ contract Equipments is Ownable, User {
         equipmentIndex[_rowToDelete] = _keyToMove;
         equipments[_keyToMove].index = _rowToDelete; 
         equipmentIndex.length--;
-        DeleteEquipment(_addr, _rowToDelete);
-        UpdateEquipment(_keyToMove, equipments[_keyToMove].userId, _rowToDelete, equipments[_keyToMove].kwh, equipments[_keyToMove].price);
+        emit DeleteEquipment(_addr, _rowToDelete);
+        emit UpdateEquipment(_keyToMove, equipments[_keyToMove].userId, _rowToDelete, equipments[_keyToMove].kwh, equipments[_keyToMove].price);
         return _rowToDelete;
     }
 

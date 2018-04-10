@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 
 contract ProofOfLoss {
@@ -26,7 +26,7 @@ contract ProofOfLoss {
         address _receiver = msg.sender;
         getLoss[_owner].receiver = _receiver;
         getLoss[_owner].initialBlockNumber = block.number;
-        RecoverBalance(_owner, _receiver, true);
+        emit RecoverBalance(_owner, _receiver, true);
     }
 
 }

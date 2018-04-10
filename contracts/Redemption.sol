@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "./zeppelin/Ownable.sol";
 import "./zeppelin/SafeMath.sol";
@@ -36,7 +36,7 @@ contract Redemptions is Ownable {
 
         redemptions.push(redemption);
 
-        RedeemEvent(redemption.redeemer, redemption.amount, redemption.timestamp);
+        emit RedeemEvent(redemption.redeemer, redemption.amount, redemption.timestamp);
     }
 
     function approveRedemption(uint _index) public onlyOwner {

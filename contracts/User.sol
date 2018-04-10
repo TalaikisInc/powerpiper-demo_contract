@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "./zeppelin/SafeMath.sol";
 import "./zeppelin/Ownable.sol";
@@ -48,7 +48,7 @@ contract User is Ownable {
         users[_addr].firstName = _firstName;
         users[_addr].lastName = _lastName;
         users[_addr].index = userIndex.push(_addr) - 1;
-        NewUser(_addr, users[_addr].index,  _email, _firstName, _lastName);
+        emit NewUser(_addr, users[_addr].index,  _email, _firstName, _lastName);
         return userIndex.length - 1;
     }
 
@@ -79,7 +79,7 @@ contract User is Ownable {
         users[_addr].email = _email;
         users[_addr].firstName = _firstName;
         users[_addr].lastName = _lastName;
-        UpdateUser(_addr, users[_addr].index, _email, _firstName, _lastName);
+        emit UpdateUser(_addr, users[_addr].index, _email, _firstName, _lastName);
         return true;
     }
 
@@ -94,8 +94,8 @@ contract User is Ownable {
         userIndex[_rowToDelete] = _keyToMove;
         users[_keyToMove].index = _rowToDelete; 
         userIndex.length--;
-        DeleteUser(_addr, _rowToDelete);
-        UpdateUser(_keyToMove, _rowToDelete, users[_keyToMove].email, users[_keyToMove].firstName, users[_keyToMove].lastName);
+        emit DeleteUser(_addr, _rowToDelete);
+        emit UpdateUser(_keyToMove, _rowToDelete, users[_keyToMove].email, users[_keyToMove].firstName, users[_keyToMove].lastName);
         return _rowToDelete;
     }
 

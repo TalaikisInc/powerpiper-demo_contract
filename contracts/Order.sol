@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "./zeppelin/Ownable.sol";
 import "./zeppelin/SafeMath.sol";
@@ -64,7 +64,7 @@ contract Orders is Ownable, User {
 
         orders.push(order);
 
-        BuyDirectEvent(order.buyer, order.amount, order.timestamp);
+        emit BuyDirectEvent(order.buyer, order.amount, order.timestamp);
     }
 
 }

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "./zeppelin/Ownable.sol";
 import "./zeppelin/SafeMath.sol";
@@ -43,7 +43,7 @@ contract Places is Ownable, User {
         places[_addr].price = _price;
         places[_addr].userId = _userAddr;
         places[_addr].index = placeIndex.push(_addr) - 1;
-        NewPlace(_addr, _userAddr, places[_addr].index,  _msq, _kwh, _price);
+        emit NewPlace(_addr, _userAddr, places[_addr].index,  _msq, _kwh, _price);
         users[_addr].placeId.push(_addr);
         return placeIndex.length - 1;
     }
@@ -72,7 +72,7 @@ contract Places is Ownable, User {
         places[_addr].msq = _msq;
         places[_addr].kwh = _kwh;
         places[_addr].price = _price;
-        UpdatePlace(_addr, _userAddr, places[_addr].index, _msq, _kwh, _price);
+        emit UpdatePlace(_addr, _userAddr, places[_addr].index, _msq, _kwh, _price);
         return true;
     }
 
@@ -87,8 +87,8 @@ contract Places is Ownable, User {
         placeIndex[_rowToDelete] = _keyToMove;
         places[_keyToMove].index = _rowToDelete; 
         placeIndex.length--;
-        DeletePlace(_addr, _rowToDelete);
-        UpdatePlace(_keyToMove, places[_keyToMove].userId, _rowToDelete, places[_keyToMove].msq, places[_keyToMove].kwh, places[_keyToMove].price);
+        emit DeletePlace(_addr, _rowToDelete);
+        emit UpdatePlace(_keyToMove, places[_keyToMove].userId, _rowToDelete, places[_keyToMove].msq, places[_keyToMove].kwh, places[_keyToMove].price);
         return _rowToDelete;
     }
 

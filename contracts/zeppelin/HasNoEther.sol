@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "./Ownable.sol";
 
@@ -13,7 +13,7 @@ contract HasNoEther is Ownable {
     }
 
     function reclaimEther() external onlyOwner {
-        assert(owner.send(this.balance));
+        assert(owner.send(address(this).balance));
     }
 
 }

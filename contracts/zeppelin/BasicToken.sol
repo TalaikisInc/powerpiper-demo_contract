@@ -1,13 +1,9 @@
-pragma solidity ^0.4.19;
-
+pragma solidity ^0.4.21;
 
 import "./ERC20Basic.sol";
 import "./SafeMath.sol";
 
-/**
- * @title Basic token
- * @dev Basic version of StandardToken, with no allowances.
- */
+
 contract BasicToken is ERC20Basic {
     using SafeMath for uint256;
 
@@ -26,7 +22,7 @@ contract BasicToken is ERC20Basic {
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        Transfer(msg.sender, _to, _value);
+        emit Transfer(msg.sender, _to, _value);
         return true;
     }
 
