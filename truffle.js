@@ -1,10 +1,15 @@
 require('babel-register')
 require('babel-polyfill')
+const assert = require('assert')
 const prod = process.env.ENV === 'production'
 const envLoc = prod ? './.env' : './.env'
 require('dotenv').config({ path: envLoc })
 const crypt = require('./crypto')
-const WalletProvider = require('truffle-hdwallet-provider-privkey')
+// const HDWalletProvider = require('truffle-hdwallet-provider-privkey')
+const HDWalletProvider = require('truffle-hdwallet-provider')
+assert.equal(typeof process.env.MNEMONIC, 'string', 'We need mnemonic')
+assert.equal(typeof process.env.INFURA_API_KEY, 'string', 'We need Infura API key')
+assert.equal(typeof process.env.OWNER, 'string', 'We need owner address')
 
 const config = {
   networks: {
@@ -12,21 +17,19 @@ const config = {
       host: '127.0.0.1',
       port: 8545,
       network_id: 336
-    }/*,
+    },
     rinkeby: {
-      provider: new WalletProvider(crypt.decrypt(process.env.PRIVATE_KEY, process.env.ENCRYPTION_PASSWORD),
-        'https://rinkeby.infura.io/' + crypt.decrypt(process.env.INFURA_API_KEY, process.env.ENCRYPTION_PASSWORD)),
-      network_id: 4,
-      gas: 4700036,
-      gasPrice: 130000000000
+      host: 'localhost',
+      port: 8545,
+      network_id: '4',
+      from: process.env.OWNER,
+      gas: 6712390
     },
     ropsten: {
-      provider: new WalletProvider(crypt.decrypt(process.env.PRIVATE_KEY, process.env.ENCRYPTION_PASSWORD),
-        'https://ropsten.infura.io/' + crypt.decrypt(process.env.INFURA_API_KEY, process.env.ENCRYPTION_PASSWORD)),
+      provider: new HDWalletProvider(process.env.MNEMONIC, `https://ropsten.infura.io/${process.env.INFURA_API_KEY}`),
       network_id: 3,
-      gas: 4700036,
-      gasPrice: 130000000000
-    }*/,
+      gas: 6712390
+    },
     coverage: {
       host: 'localhost',
       network_id: '*',
@@ -34,6 +37,13 @@ const config = {
       gas: 0xfffffffffff,
       gasPrice: 0x01
     }
+  },
+  solc: {
+    optimizer: {
+      enabled: true,
+      runs: 200
+    }
   }
  }
+ 
 module.exports = config

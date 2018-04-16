@@ -1,64 +1,39 @@
 require('babel-register')
 require('babel-polyfill')
+const chalk = require('chalk')
+const prod = process.env.ENV === 'production'
+const envLoc = prod ? '../.env' : '../.env'
+require('dotenv').config({ path: envLoc })
+const assert = require('assert')
 const Web3 = require('web3')
 const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
 const PowerPiperToken = artifacts.require('./PowerPiperToken.sol')
 const PowerPiperCrowdsale = artifacts.require('./PowerPiperCrowdsale.sol')
-const Migrations = artifacts.require("./Migrations.sol")
-// const Convertlib = artifacts.require('./Convertlib.sol')
-// const Exchange = artifacts.require('./Exchange.sol')
+assert.equal(typeof process.env.OWNER, 'string', 'We need owner address')
 
 module.exports = function(deployer, network, accounts) {
-  const _openingTime = web3.eth.getBlock('latest').timestamp + 20; // ICO after 20 s
-  const _closingTime = _openingTime + 86400 * 10; // 10 days
-  const _rate = 3000
-  const _wallet = accounts[0] // owner address
-  const _cap = web3.toWei(555, 'ether')
-  const _goal = 10
+  const _wallet = process.env.ENV === 'development' ? accounts[0] : process.env.OWNER
 
   return deployer
     .then(() => {
-      return deployer.deploy(Migrations)
-    })
-    /*.then(() => {
-      return deployer.deploy(Convertlib)
-    })
-    .then(() => {
-      return deployer.link(PowerPiperToken, Convertlib)
-    })*/
-    .then(() => {
-        return deployer.deploy(PowerPiperToken,
-          _cap * _rate
-        )
-    })
-    /*.then(() => {
-      return deployer.link(PowerPiperToken, Exchange)
-    })
-    .then(() => {
-      return deployer.deploy(Exchange, _wallet)
-    })*/
-    .then(() => {
       return deployer.deploy(
         PowerPiperCrowdsale,
-          _openingTime,
-          _closingTime,
-          _rate,
-          _cap,
-          _wallet,
-          PowerPiperToken.address,
-          _goal,
-          { from: _wallet }
+          { from: _wallet, gas: 6712390, gasPrice: web3.toWei(4, 'gwei') }
       )
     })
     .then(async () => {
-      const instance = await PowerPiperCrowdsale.deployed()
-      const token = await instance.token.call()
-      console.log('Token address', token)
-      console.log('start: ', _openingTime)
-      console.log('end: ', _closingTime)
-      console.log('rate: ', _rate.toString())
-      console.log('wallet: ', _wallet)
-      console.log(' capInWei:', _cap)
+      const crowdsale = await PowerPiperCrowdsale.deployed()
+      console.log(`Crowdsale address: ${chalk.green(crowdsale.address)}`)
+    })
+    .then(() => {
+      return deployer.deploy(
+        PowerPiperToken,
+        { from: _wallet, gas: 6712390, gasPrice: web3.toWei(4, 'gwei') }
+      )
+    })
+    .then(async () => {
+      const token = await PowerPiperToken.deployed()
+      console.log(`Token address: ${chalk.green(token.address)}`)
     })
 
 }

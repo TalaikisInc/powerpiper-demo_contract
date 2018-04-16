@@ -1,3 +1,4 @@
+require('truffle-test-utils').init();
 import ether from './helpers/ether';
 import { advanceBlock } from './helpers/advanceToBlock';
 import { increaseTimeTo, duration } from './helpers/increaseTime';

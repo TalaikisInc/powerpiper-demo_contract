@@ -1,25 +1,20 @@
 pragma solidity ^0.4.21;
 
+import "../zeppelin/Ownable.sol";
 
-contract Relay {
+contract Relay is Ownable {
     address public currentVersion;
-    address public owner;
-
-    modifier onlyOwner() {
-        require(msg.sender == owner);
-        _;
-    }
 
     function Relay(address initAddr) public {
         currentVersion = initAddr;
-        owner = msg.sender;
     }
 
-    function changeContract(address newVersion) public onlyOwner() {
+    function changeContract(address newVersion) public onlyOwner {
         currentVersion = newVersion;
     }
 
     function () external {
         require(currentVersion.delegatecall(msg.data));
     }
+
 }

@@ -6,16 +6,19 @@
     "lint:fix": "eslint . --fix",
     "lint:contract": "solium -d contracts/",
     "lint:contract:fix": "solium -d contracts/ --fix",
-    "compile:local": "rm -rf build/ && truffle compile --network=development --optimize-runs 200 && npm run copy",
-    "compile:ropsten": "rm -rf build/ && truffle compile --network=ropsten --optimize-runs 200 && npm run copy",
-    "migrate:local": "truffle migrate --network=development --reset",
-    "migrate:ropsten": "truffle migrate --network=ropsten --reset",
+    "compile:local": "rm -rf build/ && truffle compile --network development",
+    "compile:ropsten": "rm -rf build/ && truffle compile --network ropsten",
+    "compile:rinkeby": "rm -rf build/ && truffle compile --network rinkeby",
+    "migrate:local": "truffle migrate --network development --reset",
+    "migrate:ropsten": "truffle migrate --network ropsten --reset",
+    "migrate:rinkeby": "truffle migrate --network rinkeby --reset",
     "coverage": "./node_modules/.bin/solidity-coverage",
     "rpc": "ganache-cli --defaultBalanceEther 1000000 --gasPrice 1 --gasLimit 0xfffffffffff --seed --networkId 336",
+    "rpc:rinkeby": "geth --datadir=~/.ethereum --rinkeby --rpc --rpcapi db,eth,net,web3,personal",
     "graph": "solgraph ./contracts/PowerPiperCrowdsale.sol > ./graph/PowerPiperCrowdsale.dot && dot -Tpng ./graph/PowerPiperCrowdsale.dot > ./graph/PowerPiperCrowdsale.png && solgraph ./contracts/PowerPiperToken.sol > ./graph/PowerPiperToken.dot && dot -Tpng ./graph/PowerPiperToken.dot > ./graph/PowerPiperToken.png",
     "test": "truffle test",
     "copy": "cp -R build/contracts/*.json app/src/contracts/",
-    "flatten": "truffle-flattener contracts/PowerPiperCrowdsale.sol >> contracts/flat/PowerPiperCrowdsale.sol"
+    "flatten": "truffle-flattener contracts/PowerPiperCrowdsale.sol >> contracts/flat/PowerPiperFlattenedCrowdsale.sol && truffle-flattener contracts/PowerPiperToken.sol >> contracts/flat/PowerPiperFlattenedToken.sol"
   },
   "repository": {
     "type": "git",
@@ -34,13 +37,15 @@
   "author": "Tadas Talaikis, PowerPiper Team <info@talaikis.com>",
   "license": "GPLv3",
   "dependencies": {
+    "chalk": "^2.3.2",
     "cross-env": "^5.1.4",
     "crypto": "^1.0.1",
     "dotenv": "^5.0.1",
     "truffle": "^4.1.5",
     "truffle-contract": "^3.0.4",
+    "truffle-hdwallet-provider": "0.0.3",
     "truffle-hdwallet-provider-privkey": "^0.2.0",
-    "truffle-wallet-provider": "0.0.5"
+    "zeppelin-solidity": "^1.8.0"
   },
   "devDependencies": {
     "babel-cli": "^6.22.2",
@@ -66,6 +71,7 @@
     "json-loader": "^0.5.4",
     "solgraph": "^0.2.6",
     "solidity-coverage": "^0.4.15",
-    "solium": "^1.1.6"
+    "solium": "^1.1.6",
+    "truffle-test-utils": "^0.1.0"
   }
 }
