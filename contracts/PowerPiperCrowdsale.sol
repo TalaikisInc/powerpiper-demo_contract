@@ -146,18 +146,22 @@ contract PowerPiperCrowdsale is ERC20, Ownable {
         safeTransfer(owner, balance);
     }
 
-    function addToWhitelist(address _beneficiary) external onlyOwner {
+    function addToWhitelist(address _beneficiary) public onlyOwner {
         whitelist[_beneficiary] = true;
     }
 
-    function addManyToWhitelist(address[] _beneficiaries) external onlyOwner {
+    function addManyToWhitelist(address[] _beneficiaries) public onlyOwner {
         for (uint256 i = 0; i < _beneficiaries.length; i++) {
             whitelist[_beneficiaries[i]] = true;
         }
     }
 
-    function removeFromWhitelist(address _beneficiary) external onlyOwner {
+    function removeFromWhitelist(address _beneficiary) public onlyOwner {
         whitelist[_beneficiary] = false;
+    }
+
+    function getWhitelistStatus(address _beneficiary) public onlyOwner returns (bool) {
+        return whitelist[_beneficiary];
     }
 
 }

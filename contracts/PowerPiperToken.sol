@@ -45,11 +45,7 @@ contract PowerPiperToken is ERC20, Ownable {
 
     struct UserStruct {
         uint index;
-        bytes32 email;
-        bytes32 firstName;
-        bytes32 lastName;
-        address[] placeId;
-        address[] equipmentId;
+        string hash;
     }
 
     bytes32 public name;
@@ -64,12 +60,12 @@ contract PowerPiperToken is ERC20, Ownable {
     RedemptionStruct[] redemptions;
     OrderStruct[] orders;
     Cert[] certificates;
-    mapping(address => EquipmentStruct) equipments;
+    mapping(address => EquipmentStruct) public equipments;
     address[] private equipmentIndex;
-    mapping(address => PlaceStruct) places;
+    mapping(address => PlaceStruct) public places;
     address[] private placeIndex;
-    mapping(address => UserStruct) users;
-    address[] private userIndex;
+    mapping(address => UserStruct) public users;
+    address[] public userIndex;
 
     event Mint(address indexed to, uint amount);
     event MintFinished();
@@ -82,7 +78,7 @@ contract PowerPiperToken is ERC20, Ownable {
     event NewPlace(address indexed _addr, address indexed _userAddr, uint _index, uint _msq, uint _kwh, uint _price);
     event UpdatePlace(address indexed _addr, address indexed _userAddr, uint _index, uint _msq, uint _kwh, uint _price);
     event DeletePlace(address indexed _addr,  uint _index);
-    event NewUser(address indexed _addr, uint _index, bytes32 _email, bytes32 _firstName, bytes32 _lastName);
+    event NewUser(address indexed _addr, uint _index, string _hash);
     event UpdateUser(address indexed _addr,  uint _index, bytes32 _email, bytes32 _firstName, bytes32 _lastName);
     event DeleteUser(address indexed _addr,  uint _index);
 
@@ -170,7 +166,7 @@ contract PowerPiperToken is ERC20, Ownable {
         return true;
     }
 
-    function finishMinting() canMint public returns (bool) {
+    function finishMinting() canMint onlyOwner public returns (bool) {
         mintingFinished = true;
         emit MintFinished();
         return true;
@@ -185,7 +181,7 @@ contract PowerPiperToken is ERC20, Ownable {
         emit DestroyTokens(msg.sender, _amount);
     }
 
-    function redeem(uint _value, string _location) public returns (uint) {
+    /*function redeem(uint _value, string _location) public returns (uint) {
         require(balanceOf(msg.sender) >= _value);
 
         approve(msg.sender, _value);
@@ -249,7 +245,7 @@ contract PowerPiperToken is ERC20, Ownable {
 
         uint feeAmount = calculateFee(_amount);
         _amount = _amount.sub(feeAmount);
-        mint(this, feeAmount);
+        mint(address(this), feeAmount);
 
         mint(order.buyer, _amount);
 
@@ -336,7 +332,7 @@ contract PowerPiperToken is ERC20, Ownable {
         equipments[_addr].userId = _userAddr;
         equipments[_addr].index = equipmentIndex.push(_addr) - 1;
         emit NewEquipment(_addr, _userAddr, equipments[_addr].index, _kwh, _price);
-        users[_addr].equipmentId.push(_addr);
+        // users[_addr].equipmentId.push(_addr);
         return equipmentIndex.length - 1;
     }
 
@@ -408,7 +404,7 @@ contract PowerPiperToken is ERC20, Ownable {
         places[_addr].userId = _userAddr;
         places[_addr].index = placeIndex.push(_addr) - 1;
         emit NewPlace(_addr, _userAddr, places[_addr].index,  _msq, _kwh, _price);
-        users[_addr].placeId.push(_addr);
+        // users[_addr].placeId.push(_addr);
         return placeIndex.length - 1;
     }
 
@@ -462,30 +458,25 @@ contract PowerPiperToken is ERC20, Ownable {
 
     function getPlaceAtIndex(uint index) public constant returns(address _addr) {
         return placeIndex[index];
-    }
+    }*/
 
     function existsUser(address _addr) public constant returns(bool isIndexed) {
         if(userIndex.length == 0) return false;
         return (userIndex[users[_addr].index] == _addr);
     }
 
-    function newtUser(address _addr, bytes32 _email, bytes32 _firstName, bytes32 _lastName)
-    nonEmpty(_email)
-    onlyOwner
+    function newUser(string _hash)
     public
-    nonEmpty(_firstName)
-    nonEmpty(_lastName)
-    returns(uint index) {
-        require(existsUser(_addr) == false);
-        users[_addr].email = _email;
-        users[_addr].firstName = _firstName;
-        users[_addr].lastName = _lastName;
-        users[_addr].index = userIndex.push(_addr) - 1;
-        emit NewUser(_addr, users[_addr].index,  _email, _firstName, _lastName);
-        return userIndex.length - 1;
+    returns(bool) {
+        require(existsUser(msg.sender) == false);
+        users[msg.sender].index = userIndex.push(msg.sender);
+        users[msg.sender].hash = _hash;
+
+        emit NewUser(msg.sender, users[msg.sender].index,  _hash);
+        return true;
     }
 
-    function getUser(address _addr)
+    /*function getUser(address _addr)
     onlyOwner
     onlyBy(_addr)
     public
@@ -530,17 +521,25 @@ contract PowerPiperToken is ERC20, Ownable {
         emit DeleteUser(_addr, _rowToDelete);
         emit UpdateUser(_keyToMove, _rowToDelete, users[_keyToMove].email, users[_keyToMove].firstName, users[_keyToMove].lastName);
         return _rowToDelete;
+    }*/
+
+    function getUsers() public view onlyOwner returns(address[]) {
+        return userIndex;
     }
 
-    function getUserCount() public constant returns(uint count) {
+    function getUserCount() public view onlyOwner returns(uint count) {
         return userIndex.length;
     }
 
     function getUserAtIndex(uint index)
     public
     onlyOwner
-    constant returns(address _addr) {
-        return userIndex[index];
+    constant returns(uint, address, string) {
+        return (
+            users[userIndex[index]].index,
+            userIndex[index],
+            users[userIndex[index]].hash
+        );
     }
 
 }
