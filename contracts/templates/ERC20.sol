@@ -4,6 +4,8 @@ pragma solidity ^0.4.21;
 contract ERC20 {
 
     mapping(address => uint256) balances;
+    mapping(address => mapping(address => uint)) internal allowed;
+    uint public _totalSupply;
 
     function allowance(address owner, address spender) public view returns (uint256);
     function transferFrom(address from, address to, uint256 tokens) public returns (bool);

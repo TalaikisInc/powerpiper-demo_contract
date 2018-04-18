@@ -1,16 +1,15 @@
 pragma solidity ^0.4.21;
 
-import "./zeppelin/Ownable.sol";
-import "./zeppelin/ERC20.sol";
-import "./zeppelin/ApproveAndCallFallBack.sol";
-import "./zeppelin/SafeMath.sol";
+import "./templates/Ownable.sol";
+import "./templates/Basic.sol";
+import "./templates/ApproveAndCallFallBack.sol";
+import "./templates/SafeMath.sol";
 
-contract PowerPiperCrowdsale is ERC20, Ownable {
+contract PowerPiperCrowdsale is Basic, Ownable {
 
     bytes32 public symbol;
     bytes32 public  tokenName;
     uint8 public decimals;
-    uint public _totalSupply;
     uint public startDate;
     uint public bonusEnds;
     uint public endDate;
@@ -19,7 +18,6 @@ contract PowerPiperCrowdsale is ERC20, Ownable {
     uint public cap;
     uint public weiRaised;
     bool private reentrancyLock = false;
-    mapping(address => mapping(address => uint)) internal allowed;
     mapping(address => bool) internal whitelist;
 
     modifier isWhitelisted(address _beneficiary) {
@@ -45,46 +43,6 @@ contract PowerPiperCrowdsale is ERC20, Ownable {
 
     function capReached() public view returns (bool) {
         return weiRaised >= cap;
-    }
-
-    function totalSupply() public constant returns (uint) {
-        return _totalSupply - balances[address(0)];
-    }
-
-    function balanceOf(address _tokenOwner) public constant returns (uint balance) {
-        return balances[_tokenOwner];
-    }
-
-    function transfer(address _to, uint _tokens) public returns (bool success) {
-        require(_to != address(0));
-        require(_tokens <= balances[msg.sender] && _tokens > 0);
-
-        balances[msg.sender] = SafeMath.sub(balances[msg.sender], _tokens);
-        balances[_to] = SafeMath.add(balances[_to], _tokens);
-        emit Transfer(msg.sender, _to, _tokens);
-        return true;
-    }
-
-    function approve(address _spender, uint _tokens) public returns (bool success) {
-        allowed[msg.sender][_spender] = _tokens;
-        emit Approval(msg.sender, _spender, _tokens);
-        return true;
-    }
-
-    function transferFrom(address _from, address _to, uint _tokens) public returns (bool success) {
-        require(_to != address(0));
-        require(_tokens <= balances[_from]);
-        require(_tokens <= allowed[_from][msg.sender]);
-
-        balances[_from] = SafeMath.sub(balances[_from], _tokens);
-        allowed[_from][msg.sender] = SafeMath.sub(allowed[_from][msg.sender], _tokens);
-        balances[_to] = SafeMath.add(balances[_to], _tokens);
-        emit Transfer(_from, _to, _tokens);
-        return true;
-    }
-
-    function allowance(address _tokenOwner, address _spender) public constant returns (uint remaining) {
-        return allowed[_tokenOwner][_spender];
     }
 
     function approveAndCall(address _spender, uint _tokens, bytes _data) public returns (bool success) {

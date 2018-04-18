@@ -1,6 +1,6 @@
 pragma solidity ^0.4.21;
 
-import "../zeppelin/Ownable.sol";
+import "../templates/Ownable.sol";
 
 contract Relay is Ownable {
     address public currentVersion;

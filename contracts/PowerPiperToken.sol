@@ -1,11 +1,12 @@
 pragma solidity ^0.4.21;
 
-import "./zeppelin/SafeMath.sol";
-import "./zeppelin/Ownable.sol";
-import "./zeppelin/ERC20.sol";
+import "./templates/SafeMath.sol";
+import "./templates/Basic.sol";
+import "./templates/Mintable.sol";
+import "./Users.sol";
 
 
-contract PowerPiperToken is ERC20, Ownable {
+contract PowerPiperToken is Basic, Mintable, Users {
 
     using SafeMath for uint;
 
@@ -43,19 +44,11 @@ contract PowerPiperToken is ERC20, Ownable {
         address userId;
     }
 
-    struct UserStruct {
-        uint index;
-        string hash;
-    }
-
     bytes32 public name;
     bytes32 public symbol;
     uint public decimals;
     uint public fee;
     uint public priceMarkup;
-    uint _totalSupply;
-    mapping(address => mapping(address => uint)) internal allowed;
-    bool public mintingFinished = false;
     uint public reserves = 0;
     RedemptionStruct[] redemptions;
     OrderStruct[] orders;
@@ -64,12 +57,7 @@ contract PowerPiperToken is ERC20, Ownable {
     address[] private equipmentIndex;
     mapping(address => PlaceStruct) public places;
     address[] private placeIndex;
-    mapping(address => UserStruct) public users;
-    address[] public userIndex;
 
-    event Mint(address indexed to, uint amount);
-    event MintFinished();
-    event DestroyTokens(address indexed _from, uint _value);
     event RedeemEvent(address _redeember, uint _amount, uint _timestamp);
     event BuyDirectEvent(address _buyer, uint _amount, uint _timestamp);
     event NewEquipment(address indexed _addr, address indexed _userAddr, uint _index, uint _kwh, uint _price);
@@ -78,9 +66,6 @@ contract PowerPiperToken is ERC20, Ownable {
     event NewPlace(address indexed _addr, address indexed _userAddr, uint _index, uint _msq, uint _kwh, uint _price);
     event UpdatePlace(address indexed _addr, address indexed _userAddr, uint _index, uint _msq, uint _kwh, uint _price);
     event DeletePlace(address indexed _addr,  uint _index);
-    event NewUser(address indexed _addr, uint _index, string _hash);
-    event UpdateUser(address indexed _addr,  uint _index, bytes32 _email, bytes32 _firstName, bytes32 _lastName);
-    event DeleteUser(address indexed _addr,  uint _index);
 
     function PowerPiperToken() public {
         symbol = "PWP";
@@ -88,56 +73,6 @@ contract PowerPiperToken is ERC20, Ownable {
         decimals = 3;
         fee = 1 * 10 ** decimals; // 1%
         priceMarkup = 5 * 10 ** decimals; // 5%
-    }
-
-    modifier canMint() {
-        require(!mintingFinished);
-        _;
-    }
-
-    modifier nonEmpty(bytes32 _str) {
-        require(bytes32(_str).length > 5);
-        _;
-    }
-
-    function balanceOf(address _tokenOwner) public constant returns (uint balance) {
-        return balances[_tokenOwner];
-    }
-
-    function transfer(address _to, uint _tokens) public returns (bool success) {
-        require(_to != address(0));
-        require(_tokens <= balances[msg.sender] && _tokens > 0);
-
-        balances[msg.sender] = SafeMath.sub(balances[msg.sender], _tokens);
-        balances[_to] = SafeMath.add(balances[_to], _tokens);
-        emit Transfer(msg.sender, _to, _tokens);
-        return true;
-    }
-
-    function approve(address _spender, uint _tokens) public returns (bool success) {
-        allowed[msg.sender][_spender] = _tokens;
-        emit Approval(msg.sender, _spender, _tokens);
-        return true;
-    }
-
-    function transferFrom(address _from, address _to, uint _tokens) public returns (bool success) {
-        require(_to != address(0));
-        require(_tokens <= balances[_from]);
-        require(_tokens <= allowed[_from][msg.sender]);
-
-        balances[_from] = SafeMath.sub(balances[_from], _tokens);
-        allowed[_from][msg.sender] = SafeMath.sub(allowed[_from][msg.sender], _tokens);
-        balances[_to] = SafeMath.add(balances[_to], _tokens);
-        emit Transfer(_from, _to, _tokens);
-        return true;
-    }
-
-    function allowance(address _tokenOwner, address _spender) public constant returns (uint remaining) {
-        return allowed[_tokenOwner][_spender];
-    }
-
-    function totalSupply() public constant returns (uint) {
-        return _totalSupply  - balances[address(0)];
     }
 
     function calculateFee(uint _amount) public view returns (uint) {
@@ -156,29 +91,6 @@ contract PowerPiperToken is ERC20, Ownable {
 
     function setPriceMarkup(uint _priceMarkup) public onlyOwner {
         priceMarkup = _priceMarkup;
-    }
-
-    function mint(address _to, uint _amount) canMint public returns (bool) {
-        _totalSupply = SafeMath.add(_totalSupply, _amount);
-        balances[_to] = SafeMath.add(balances[_to], _amount);
-        emit Mint(_to, _amount);
-        emit Transfer(address(0), _to, _amount);
-        return true;
-    }
-
-    function finishMinting() canMint onlyOwner public returns (bool) {
-        mintingFinished = true;
-        emit MintFinished();
-        return true;
-    }
-
-    function destroyTokens(uint _amount) onlyOwner public {
-        require(balances[msg.sender] >= _amount);
-
-        balances[msg.sender] = SafeMath.sub(balances[msg.sender], _amount);
-        _totalSupply = SafeMath.sub(_totalSupply, _amount);
-
-        emit DestroyTokens(msg.sender, _amount);
     }
 
     /*function redeem(uint _value, string _location) public returns (uint) {
@@ -459,87 +371,5 @@ contract PowerPiperToken is ERC20, Ownable {
     function getPlaceAtIndex(uint index) public constant returns(address _addr) {
         return placeIndex[index];
     }*/
-
-    function existsUser(address _addr) public constant returns(bool isIndexed) {
-        if(userIndex.length == 0) return false;
-        return (userIndex[users[_addr].index] == _addr);
-    }
-
-    function newUser(string _hash)
-    public
-    returns(bool) {
-        require(existsUser(msg.sender) == false);
-        users[msg.sender].index = userIndex.push(msg.sender);
-        users[msg.sender].hash = _hash;
-
-        emit NewUser(msg.sender, users[msg.sender].index,  _hash);
-        return true;
-    }
-
-    /*function getUser(address _addr)
-    onlyOwner
-    onlyBy(_addr)
-    public
-    constant
-    returns(uint index, bytes32 email, bytes32 firstName, bytes32 lastName) {
-        require(existsUser(_addr) == true);
-        return(
-            users[_addr].index,
-            users[_addr].email,
-            users[_addr].firstName,
-            users[_addr].lastName
-        );
-    }
-
-    function updateUser(address _addr, bytes32 _email, bytes32 _firstName, bytes32 _lastName)
-    onlyOwner
-    onlyBy(_addr)
-    public
-    nonEmpty(_email)
-    nonEmpty(_firstName)
-    nonEmpty(_lastName)
-    returns(bool) {
-        require(existsUser(_addr) == true);
-        users[_addr].email = _email;
-        users[_addr].firstName = _firstName;
-        users[_addr].lastName = _lastName;
-        emit UpdateUser(_addr, users[_addr].index, _email, _firstName, _lastName);
-        return true;
-    }
-
-    function deleteUser(address _addr)
-    public
-    onlyOwner
-    onlyBy(_addr)
-    returns(uint index) {
-        require(existsUser(_addr) == true);
-        uint _rowToDelete = users[_addr].index;
-        address _keyToMove = userIndex[userIndex.length - 1];
-        userIndex[_rowToDelete] = _keyToMove;
-        users[_keyToMove].index = _rowToDelete; 
-        userIndex.length--;
-        emit DeleteUser(_addr, _rowToDelete);
-        emit UpdateUser(_keyToMove, _rowToDelete, users[_keyToMove].email, users[_keyToMove].firstName, users[_keyToMove].lastName);
-        return _rowToDelete;
-    }*/
-
-    function getUsers() public view onlyOwner returns(address[]) {
-        return userIndex;
-    }
-
-    function getUserCount() public view onlyOwner returns(uint count) {
-        return userIndex.length;
-    }
-
-    function getUserAtIndex(uint index)
-    public
-    onlyOwner
-    constant returns(uint, address, string) {
-        return (
-            users[userIndex[index]].index,
-            userIndex[index],
-            users[userIndex[index]].hash
-        );
-    }
 
 }
