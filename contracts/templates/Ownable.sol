@@ -21,6 +21,11 @@ contract Ownable {
         _;
     }
 
+    modifier onlyOwnerOrUser(address _account) {
+        require(msg.sender == _account || msg.sender == owner);
+        _;
+    }
+
     function validate() public view returns (bool) {
         return (msg.sender == owner);
     }

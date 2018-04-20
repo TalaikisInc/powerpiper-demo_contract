@@ -18,7 +18,7 @@ contract Users is Ownable {
     event DeleteUser(address indexed _addr,  uint _index);
 
     function getUser(address _addr)
-    onlyOwner
+    onlyOwnerOrUser
     public
     view
     returns(uint index, string _hash) {

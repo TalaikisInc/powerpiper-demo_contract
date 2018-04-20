@@ -30,10 +30,10 @@ contract PowerPiperCrowdsale is Basic, Ownable {
         tokenName = "PowerPiperToken";
         decimals = 3;
         startDate = now + 200 seconds;
-        bonusEnds = now + 1 weeks;
-        endDate = now + 7 weeks;
+        bonusEnds = now + 5 weeks;
+        endDate = now + 52 weeks;
         rate = 5000;
-        cap = 100 ether;
+        cap = 10000 ether;
         bonusRate = 6000;
     }
 

@@ -6,6 +6,11 @@ import "./ERC20.sol";
 
 contract Basic is ERC20 {
 
+    modifier onlyTokenholder() {
+        require(balances[msg.sender] > 0);
+        _;
+    }
+
     function balanceOf(address _tokenOwner) public view returns (uint balance) {
         return balances[_tokenOwner];
     }
