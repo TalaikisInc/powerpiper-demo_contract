@@ -1,7 +1,7 @@
 require('babel-register')
 require('babel-polyfill')
 const chalk = require('chalk')
-const prod = process.env.ENV === 'production'
+const prod = false
 const envLoc = prod ? '../.env' : '../.env'
 require('dotenv').config({ path: envLoc })
 const assert = require('assert')
@@ -12,7 +12,7 @@ const PowerPiperCrowdsale = artifacts.require('./PowerPiperCrowdsale.sol')
 assert.equal(typeof process.env.OWNER, 'string', 'We need owner address')
 
 module.exports = function(deployer, network, accounts) {
-  const _wallet = process.env.ENV === 'development' ? accounts[0] : process.env.OWNER
+  const _wallet = prod ? process.env.OWNER : accounts[0]
 
   return deployer
     .then(() => {

@@ -35,3 +35,4 @@ stats.txt
 .env
 build/
 app/
+allFiredEvents

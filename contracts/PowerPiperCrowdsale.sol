@@ -4,8 +4,9 @@ import "./templates/Ownable.sol";
 import "./templates/Basic.sol";
 import "./templates/ApproveAndCallFallBack.sol";
 import "./templates/SafeMath.sol";
+import "./templates/ICOManagement.sol";
 
-contract PowerPiperCrowdsale is Basic, Ownable {
+contract PowerPiperCrowdsale is Basic, Ownable, ICOManagement {
 
     bytes32 public symbol;
     bytes32 public  tokenName;
@@ -28,7 +29,7 @@ contract PowerPiperCrowdsale is Basic, Ownable {
     function PowerPiperCrowdsale() public {
         symbol = "PWP";
         tokenName = "PowerPiperToken";
-        decimals = 3;
+        decimals = 18;
         startDate = now + 200 seconds;
         bonusEnds = now + 5 weeks;
         endDate = now + 52 weeks;
@@ -80,9 +81,9 @@ contract PowerPiperCrowdsale is Basic, Ownable {
         uint tokens;
 
         if (now <= bonusEnds) {
-            tokens = msg.value * bonusRate;
+            tokens = SafeMath.mul(msg.value, bonusRate);
         } else {
-            tokens = msg.value * rate;
+            tokens = SafeMath.mul(msg.value, rate);
         }
 
         require(!reentrancyLock);

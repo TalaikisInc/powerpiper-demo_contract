@@ -4,6 +4,7 @@ pragma solidity ^0.4.21;
 contract Ownable {
 
     address public owner;
+    address public bot;
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
@@ -24,6 +25,15 @@ contract Ownable {
     modifier onlyOwnerOrUser(address _account) {
         require(msg.sender == _account || msg.sender == owner);
         _;
+    }
+
+    modifier botOnly() {
+        require(msg.sender == bot);
+        _;
+    }
+
+    function setBot(address _bot) external onlyOwner {
+        bot = _bot;
     }
 
     function validate() public view returns (bool) {
