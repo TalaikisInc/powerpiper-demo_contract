@@ -17,6 +17,13 @@ contract Users is Ownable {
     event UpdateUser(address indexed _addr,  uint _index, string _hash);
     event DeleteUser(address indexed _addr,  uint _index);
 
+    function existsUser(address _addr) public view returns(bool isIndexed) {
+        if(userIndex.length == 0) {
+            return false;
+        }
+        return (userIndex[users[_addr].index] == _addr);
+    }
+
     function getUser(address _addr)
     onlyOwnerOrUser(_addr)
     public
@@ -27,13 +34,6 @@ contract Users is Ownable {
             users[_addr].index,
             users[_addr]._hash
         );
-    }
-
-    function existsUser(address _addr) public view returns(bool isIndexed) {
-        if(userIndex.length == 0) {
-            return false;
-        }
-        return (userIndex[users[_addr].index] == _addr);
     }
 
     function newUser(string _hash)

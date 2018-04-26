@@ -4,7 +4,6 @@ const assert = require('assert')
 const prod = process.env.ENV === 'production'
 const envLoc = prod ? './.env' : './.env'
 require('dotenv').config({ path: envLoc })
-const crypt = require('./crypto')
 // const HDWalletProvider = require('truffle-hdwallet-provider-privkey')
 const HDWalletProvider = require('truffle-hdwallet-provider')
 assert.equal(typeof process.env.MNEMONIC, 'string', 'We need mnemonic')
