@@ -1,6 +1,6 @@
 pragma solidity ^0.4.21;
 
-import "./templates/Ownable.sol";
+import "./Ownable.sol";
 
 
 contract Roles is Ownable {
@@ -19,6 +19,10 @@ contract Roles is Ownable {
 
     function addAsTole(address _user, Role _role) public onlyOwner {
         roles[_user] = _role;
+    }
+
+    function getRole(address _user) public view onlyOwner returns (uint) {
+        return uint(roles[_user]);
     }
 
 }

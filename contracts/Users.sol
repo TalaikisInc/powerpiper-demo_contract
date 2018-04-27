@@ -81,15 +81,21 @@ contract Users is Ownable {
         return userIndex.length;
     }
 
-    function getUserAtIndex(uint index)
+    function getUserAtIndex(uint _index)
     public
     onlyOwner
     view returns(uint, address, string) {
         return (
-            users[userIndex[index]].index,
-            userIndex[index],
-            users[userIndex[index]]._hash
+            users[userIndex[_index]].index,
+            userIndex[_index],
+            users[userIndex[_index]]._hash
         );
+    }
+
+    function getUserPublic(uint _index)
+    public
+    view returns(address) {
+        return userIndex[_index];
     }
 
 }
