@@ -103,6 +103,7 @@ contract PowerPiperCrowdsale is Basic, Ownable, ICOManagement {
     function reclaimToken(address _tokenOwner) public onlyOwner returns (bool) {
         uint256 balance = balanceOf(_tokenOwner);
         safeTransfer(owner, balance);
+        return true;
     }
 
     function addToWhitelist(address _beneficiary) public onlyOwner {
