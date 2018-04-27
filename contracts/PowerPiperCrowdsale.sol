@@ -119,7 +119,7 @@ contract PowerPiperCrowdsale is Basic, Ownable, ICOManagement {
         whitelist[_beneficiary] = false;
     }
 
-    function getWhitelistStatus(address _beneficiary) public onlyOwner returns (bool) {
+    function getWhitelistStatus(address _beneficiary) public view onlyOwner returns (bool) {
         return whitelist[_beneficiary];
     }
 
