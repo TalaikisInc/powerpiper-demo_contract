@@ -1,6 +1,6 @@
 pragma solidity ^0.4.21;
 
-import "./ICOState.sol";
+import "../states/ICO.sol";
 import "./Ownable.sol";
 
 

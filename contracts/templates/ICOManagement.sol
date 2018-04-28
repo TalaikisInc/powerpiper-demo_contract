@@ -1,7 +1,7 @@
 pragma solidity ^0.4.21;
 
 import "./Ownable.sol";
-import "./ICOState.sol";
+import "../states/ICO.sol";
 
 
 contract ICOManagement is Ownable, ICOState {

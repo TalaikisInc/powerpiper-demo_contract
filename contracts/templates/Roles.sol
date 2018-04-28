@@ -17,7 +17,7 @@ contract Roles is Ownable {
         _;
     }
 
-    function addAsTole(address _user, Role _role) public onlyOwner {
+    function addAsRole(address _user, Role _role) public onlyOwner {
         roles[_user] = _role;
     }
 
