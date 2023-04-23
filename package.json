@@ -67,10 +67,10 @@
     "eslint-plugin-babel": "^5.0.0",
     "eslint-plugin-promise": "^3.0.0",
     "eslint-plugin-standard": "^3.0.1",
-    "ganache-cli": "^6.1.0",
+    "ganache-cli": "^6.12.2",
     "json-loader": "^0.5.4",
     "solgraph": "^0.2.6",
-    "solidity-coverage": "^0.4.15",
+    "solidity-coverage": "^0.8.2",
     "solium": "^1.1.6",
     "truffle-test-utils": "^0.1.0"
   }
