@@ -41,7 +41,7 @@
     "cross-env": "^5.1.4",
     "crypto": "^1.0.1",
     "dotenv": "^5.0.1",
-    "truffle": "^4.1.5",
+    "truffle": "^4.1.17",
     "truffle-contract": "^3.0.4",
     "truffle-hdwallet-provider": "0.0.3",
     "truffle-hdwallet-provider-privkey": "^0.2.0",
@@ -69,8 +69,8 @@
     "eslint-plugin-standard": "^3.0.1",
     "ganache-cli": "^6.1.0",
     "json-loader": "^0.5.4",
-    "solgraph": "^0.2.6",
-    "solidity-coverage": "^0.4.15",
+    "solgraph": "^1.0.2",
+    "solidity-coverage": "^0.8.2",
     "solium": "^1.1.6",
     "truffle-test-utils": "^0.1.0"
   }
